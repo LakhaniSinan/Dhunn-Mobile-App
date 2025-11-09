@@ -1,26 +1,28 @@
-import React from "react";
-import { TouchableOpacity, Image, StyleSheet, View } from "react-native";
-import { COLORS, IMAGES, SCREENS } from "../../constants";
-import { navigate, onBack } from "../../navigation/RootNavigation";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MovingText } from "./MovingText";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { PlayPauseButton, SkipToNextButton } from "../molucule/PlayerControls";
-import TrackPlayer from "react-native-track-player";
 import {
   getFocusedRouteNameFromRoute,
+  useNavigation,
   useRoute,
-} from "@react-navigation/native";
+} from '@react-navigation/native';
+import React from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import TrackPlayer from 'react-native-track-player';
+import {useDispatch, useSelector} from 'react-redux';
+import {COLORS, IMAGES, SCREENS} from '../../constants';
+import {navigate, onBack} from '../../navigation/RootNavigation';
 import {
   addFavourite,
   clearTrack,
   removeFavourite,
-} from "../../redux/slice/Player/mediaPlayerSlice";
-import Icon from "./Icon";
+} from '../../redux/slice/Player/mediaPlayerSlice';
+import {AppDispatch, RootState} from '../../redux/store';
+import {PlayPauseButton, SkipToNextButton} from '../molucule/PlayerControls';
+import Icon from './Icon';
+import {MovingText} from './MovingText';
 
 export const FooterItem = (props: any) => {
-  const { onPressRight } = props;
+  const navigation = useNavigation();
+  const {onPressRight} = props;
   const dispatch = useDispatch<AppDispatch>();
   const insets = useSafeAreaInsets();
   const {
@@ -34,49 +36,50 @@ export const FooterItem = (props: any) => {
   } = useSelector((state: RootState) => state.mediaPlayer);
   const route = useRoute();
   const routeName = getFocusedRouteNameFromRoute(route);
+
   const handleLikeToggle = () => {
     currentTrack.is_favorite
-      ? dispatch(removeFavourite({ mediaId: currentTrack.id, type: "song" }))
-      : dispatch(addFavourite({ mediaId: currentTrack.id, type: "song" }));
+      ? dispatch(removeFavourite({mediaId: currentTrack.id, type: 'song'}))
+      : dispatch(addFavourite({mediaId: currentTrack.id, type: 'song'}));
   };
 
   const clearCurrentSong = async () => {
     await TrackPlayer.stop();
     await TrackPlayer.reset();
     dispatch(clearTrack());
+    onBack();
   };
 
   if (
-    currentTrack.file_path === "" ||
-    routeName == "AudioPLay" ||
-    currentTrack.type !== "audio"
+    currentTrack.file_path === '' ||
+    routeName == 'AudioPLay' ||
+    currentTrack.type !== 'audio'
   )
     return null;
   return (
     <TouchableOpacity
       onPress={() => navigate(SCREENS.AUDIO_PLAY)}
       style={{
-        position: "absolute",
+        position: 'absolute',
         bottom: insets.bottom,
         zIndex: 100,
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#252525",
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#252525',
         padding: 8,
         borderRadius: 12,
         paddingVertical: 10,
-      }}
-    >
+      }}>
       <>
         <Image
-          source={{ uri: currentTrack.cover_image }}
+          source={{uri: currentTrack.cover_image}}
           style={styles.trackArtworkImage}
         />
 
         <View style={styles.trackTitleContainer}>
           <MovingText
             style={styles.trackTitle}
-            text={currentTrack.title ?? ""}
+            text={currentTrack.title ?? ''}
             animationThreshold={25}
           />
         </View>
@@ -114,7 +117,7 @@ const styles = StyleSheet.create({
   },
   trackTitleContainer: {
     flex: 1,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginLeft: 10,
     color: COLORS.WHITE,
   },
@@ -125,12 +128,12 @@ const styles = StyleSheet.create({
   trackTitle: {
     color: COLORS.WHITE,
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     paddingLeft: 10,
   },
   trackControlsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     columnGap: 20,
     marginRight: 16,
     paddingLeft: 16,

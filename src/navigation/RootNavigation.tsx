@@ -14,7 +14,7 @@ export function navigate(name: any, params?: object) {
 }
 
 export function onBack() {
-  navigationRef.current?.goBack();
+  if (navigationRef.current?.canGoBack()) navigationRef.current?.goBack();
 }
 
 export function replace(name: string, params?: object) {

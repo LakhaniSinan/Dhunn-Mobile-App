@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import {  StyleSheet } from "react-native";
-import { View } from "react-native-ui-lib";
-import AudioPlayerComp from "../../components/atoms/AudioPLayerComp";
+import React, {useState} from 'react';
+import {StyleSheet} from 'react-native';
+import {View} from 'react-native-ui-lib';
+import AudioPlayerComp from '../../components/atoms/AudioPLayerComp';
 
 const LineBarPLayer = () => {
   return (

@@ -22,6 +22,8 @@ import LanguageDetails from '../screens/DrawerScreen/LanguageDetails';
 import ArtistDetails from '../screens/DrawerScreen/ArtistDetails';
 import PlaylistDetails from '../screens/DrawerScreen/PlaylistDetails';
 import ProfileScreen from '../screens/DrawerScreen/ProfileScreen';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/store';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -49,6 +51,7 @@ const AppNavigator = () => {
 };
 
 const StackCompoonent = () => {
+  const {currentTrack} = useSelector((state: RootState) => state.mediaPlayer);
   return (
     <>
       <Stack.Navigator

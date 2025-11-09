@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -6,35 +6,36 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import { View } from "react-native-ui-lib";
-import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Header, Typography } from "../../components/atoms";
-import { COLORS, IMAGES } from "../../constants";
-import TrackPlayer, { Track, useActiveTrack } from "react-native-track-player";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MovingText } from "../../components/atoms/MovingText";
-import Icon from "../../components/atoms/Icon";
-import { PlayerControls } from "../../components/molucule/PlayerControls";
-import { PlayerProgressBar } from "../../components/molucule/PlayerProgressbar";
-import { PlayerVolumeBar } from "../../components/molucule/PlayerVolumeBar";
-import { PlayerRepeatToggle } from "../../components/molucule/PlayerRepeatToggle";
-import { onBack, toggleDrawer } from "../../navigation/RootNavigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { CollapsableContainer } from "../../components/molucule/CollapsableContainer";
+} from 'react-native';
+import {View} from 'react-native-ui-lib';
+import SafeAreaContainer from '../../containers/SafeAreaContainer';
+import {Header, Typography} from '../../components/atoms';
+import {COLORS, IMAGES} from '../../constants';
+import TrackPlayer, {Track, useActiveTrack} from 'react-native-track-player';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {MovingText} from '../../components/atoms/MovingText';
+import Icon from '../../components/atoms/Icon';
+import {PlayerControls} from '../../components/molucule/PlayerControls';
+import {PlayerProgressBar} from '../../components/molucule/PlayerProgressbar';
+import {PlayerVolumeBar} from '../../components/molucule/PlayerVolumeBar';
+import {PlayerRepeatToggle} from '../../components/molucule/PlayerRepeatToggle';
+import {onBack, toggleDrawer} from '../../navigation/RootNavigation';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
+import {CollapsableContainer} from '../../components/molucule/CollapsableContainer';
 import {
   addFavourite,
   removeFavourite,
   removeFromQueue,
-} from "../../redux/slice/Player/mediaPlayerSlice";
-import { MediaItem } from "../../redux/slice/Tops/TopsSlice";
+} from '../../redux/slice/Player/mediaPlayerSlice';
+import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
+import {TrackShortcutsMenu} from '../../components/atoms/TrackShortcutsMenu';
 
 const AudioPLay = () => {
   const dispatch = useDispatch<AppDispatch>();
   const activeTrack = useActiveTrack();
 
-  const { top, bottom } = useSafeAreaInsets();
+  const {top, bottom} = useSafeAreaInsets();
   const {
     currentTrack,
     isPlaying,
@@ -58,34 +59,34 @@ const AudioPLay = () => {
 
   if (!activeTrack) {
     return (
-      <View style={[{ justifyContent: "center", flex: 1 }]}>
+      <View style={[{justifyContent: 'center', flex: 1}]}>
         <ActivityIndicator color={COLORS.PRIMARY} />
       </View>
     );
   }
   const handleLikeToggle = (i: MediaItem) => {
     i.is_favorite
-      ? dispatch(removeFavourite({ mediaId: i.id, type: "song" }))
-      : dispatch(addFavourite({ mediaId: i.id, type: "song" }));
+      ? dispatch(removeFavourite({mediaId: i.id, type: 'song'}))
+      : dispatch(addFavourite({mediaId: i.id, type: 'song'}));
   };
 
   const handleRemoveTrack = async (trackId: any) => {
     try {
-      console.log("Removing track with ID:", trackId);
+      console.log('Removing track with ID:', trackId);
       const queue = await TrackPlayer.getQueue();
-      const trackIndex = queue.findIndex((track) => track.id === trackId);
+      const trackIndex = queue.findIndex(track => track.id === trackId);
       if (trackIndex === -1) {
-        console.error("Track not found in TrackPlayer queue:", trackId);
+        console.error('Track not found in TrackPlayer queue:', trackId);
         return;
       }
-      console.log("Removing track at index:", trackIndex);
+      console.log('Removing track at index:', trackIndex);
       await TrackPlayer.remove([trackIndex]);
       dispatch(removeFromQueue(trackId));
       const updatedQueue = await TrackPlayer.getQueue();
       setMyQueue(updatedQueue);
-      console.log("Track removed successfully. Updated queue:", updatedQueue);
+      console.log('Track removed successfully. Updated queue:', updatedQueue);
     } catch (error) {
-      console.error("Error removing track:", error);
+      console.error('Error removing track:', error);
     }
   };
   return (
@@ -94,8 +95,7 @@ const AudioPLay = () => {
         <DismissPlayerSymbol />
         <View
           paddingH-10
-          style={{ paddingTop: Platform.OS == "android" ? 20 : 0 }}
-        >
+          style={{paddingTop: Platform.OS == 'android' ? 20 : 0}}>
           <Header onPressLeft={() => toggleDrawer()} />
         </View>
 
@@ -103,8 +103,7 @@ const AudioPLay = () => {
           <View style={styles.downButtonContainer}>
             <TouchableOpacity
               onPress={() => onBack()}
-              style={styles.downButton}
-            >
+              style={styles.downButton}>
               <Icon
                 vector="Entypo"
                 name="chevron-down"
@@ -115,7 +114,7 @@ const AudioPLay = () => {
           </View>
           <View style={styles.artworkImageContainer}>
             <Image
-              source={{ uri: activeTrack.artwork ?? IMAGES.imageAudio }}
+              source={{uri: activeTrack.artwork ?? IMAGES.imageAudio}}
               resizeMode="cover"
               style={styles.artworkImage}
             />
@@ -125,8 +124,7 @@ const AudioPLay = () => {
               <Typography size={18}>About Track</Typography>
               <TouchableOpacity
                 onPress={() => setExpanded(!expanded)}
-                style={styles.iconButton}
-              >
+                style={styles.iconButton}>
                 <Image source={IMAGES.dropdown} style={styles.dropdownIcon} />
               </TouchableOpacity>
             </View>
@@ -145,7 +143,7 @@ const AudioPLay = () => {
                   Release Date :
                 </Typography>
                 <Typography size={16} color={COLORS.PLACEHOLDER}>
-                  {currentTrack.release_date || "Uncategorized"}
+                  {currentTrack.release_date || 'Uncategorized'}
                 </Typography>
               </View>
               <View style={styles.detailRow}>
@@ -153,90 +151,96 @@ const AudioPLay = () => {
                   Record Label Name:
                 </Typography>
                 <Typography size={16} color={COLORS.PLACEHOLDER}>
-                  {currentTrack.racket_label?.name || "Uncategorized"}
+                  {currentTrack.racket_label?.name || 'Uncategorized'}
                 </Typography>
               </View>
             </CollapsableContainer>
           </View>
-          <View style={{ flex: 1, gap: 20, top: 10 }}>
-            <View style={{ marginTop: "auto" }}>
-              <View style={{ height: 60 }}>
+          <View style={{flex: 1, gap: 20, top: 10}}>
+            <View style={{marginTop: 'auto'}}>
+              <View style={{height: 60}}>
                 <View
                   style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
                   {/* Track title */}
                   <View style={styles.trackTitleContainer}>
                     <MovingText
-                      text={activeTrack.title ?? ""}
+                      text={activeTrack.title ?? ''}
                       animationThreshold={30}
                       style={styles.trackTitleText}
                     />
                   </View>
 
-                  <Icon
-                    vector="FontAwesome6Free-Regular"
-                    name={currentTrack.is_favorite ? "heart" : "heart-o"}
+                  <TrackShortcutsMenu track={currentTrack}>
+                    <Image source={IMAGES.dotsVertical} style={styles.icon} />
+                  </TrackShortcutsMenu>
+                  {/* <Icon
+                    vector="SimpleLineIcons"
+                    name={'options-vertical'}
                     size={20}
                     color={COLORS.PRIMARY}
-                    style={{ marginHorizontal: 14 }}
+                    // onPress={() => handleLikeToggle(currentTrack)}
+                  /> */}
+                  <Icon
+                    vector="FontAwesome6Free-Regular"
+                    name={currentTrack.is_favorite ? 'heart' : 'heart-o'}
+                    size={20}
+                    color={COLORS.PRIMARY}
+                    style={{marginHorizontal: 14}}
                     onPress={() => handleLikeToggle(currentTrack)}
                   />
-                  <PlayerRepeatToggle size={30} style={{ marginBottom: 6 }} />
+                  <PlayerRepeatToggle size={30} style={{marginBottom: 6}} />
                 </View>
 
                 {activeTrack.artist && (
                   <Typography
                     numberOfLines={1}
-                    style={[styles.trackArtistText, { marginTop: 6 }]}
-                  >
+                    style={[styles.trackArtistText, {marginTop: 6}]}>
                     {activeTrack.artist}
                   </Typography>
                 )}
               </View>
 
-              <PlayerProgressBar style={{ marginTop: 32 }} />
+              <PlayerProgressBar style={{marginTop: 32}} />
 
-              <PlayerControls style={{ marginTop: 40 }} />
+              <PlayerControls style={{marginTop: 40}} />
             </View>
 
-            <PlayerVolumeBar style={{ marginTop: "auto", marginBottom: 30 }} />
+            <PlayerVolumeBar style={{marginTop: 'auto', marginBottom: 30}} />
           </View>
           <View gap-10>
             {myQueue.length > 1 &&
-              myQueue.map((i) => (
+              myQueue.map(i => (
                 <View
                   style={{
                     flex: 1,
-                    flexDirection: "row",
+                    flexDirection: 'row',
                     gap: 10,
-                    justifyContent: "space-between",
-                    backgroundColor: "#231F25",
+                    justifyContent: 'space-between',
+                    backgroundColor: '#231F25',
                     borderRadius: 10,
                     marginBottom: 10,
                     padding: 10,
                     borderWidth: 1,
-                    borderColor: "#2B2B2B",
-                    alignItems: "center",
-                  }}
-                >
+                    borderColor: '#2B2B2B',
+                    alignItems: 'center',
+                  }}>
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: 'row',
                       gap: 10,
-                      alignItems: "center",
-                    }}
-                  >
+                      alignItems: 'center',
+                    }}>
                     <Image
-                      source={{ uri: i.artwork }}
+                      source={{uri: i.artwork}}
                       style={{
                         width: 50,
                         height: 50,
                         borderRadius: 10,
-                        resizeMode: "cover",
+                        resizeMode: 'cover',
                       }}
                     />
                     <Typography textType="bold">{i.title}</Typography>
@@ -260,18 +264,17 @@ const DismissPlayerSymbol = () => {
   return (
     <View
       style={{
-        position: "relative",
-        flexDirection: "row",
-        justifyContent: "center",
-      }}
-    >
+        position: 'relative',
+        flexDirection: 'row',
+        justifyContent: 'center',
+      }}>
       <View
         accessible={false}
         style={{
           width: 80,
           height: 8,
           borderRadius: 8,
-          backgroundColor: "#fff",
+          backgroundColor: '#fff',
           opacity: 0.7,
         }}
       />
@@ -283,15 +286,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-  downButtonContainer:{
-    position: "absolute",
+  downButtonContainer: {
+    position: 'absolute',
     top: 10,
     right: 10,
     zIndex: 100,
     elevation: 100,
   },
   downButton: {
-    backgroundColor: "#231F25",
+    backgroundColor: '#231F25',
     padding: 10,
     borderRadius: 50,
   },
@@ -302,58 +305,62 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.44,
     shadowRadius: 11.0,
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     height: 200,
   },
   artworkImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
     borderRadius: 12,
   },
   trackTitleContainer: {
     flex: 1,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   trackTitleText: {
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.WHITE,
   },
   trackArtistText: {
     fontSize: 12,
     opacity: 0.8,
-    maxWidth: "90%",
+    maxWidth: '90%',
   },
   detailRow: {
     flex: 1,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginVertical: 5,
   },
   card: {
-    backgroundColor: "#231F25",
+    backgroundColor: '#231F25',
     borderRadius: 10,
     marginBottom: 10,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#2B2B2B",
+    borderColor: '#2B2B2B',
     marginVertical: 10,
   },
   cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   iconButton: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   dropdownIcon: {
     width: 20,
     height: 20,
+  },
+  icon: {
+    width: 35, // Adjust the size based on your icon dimensions
+    height: 35,
   },
 });
 
