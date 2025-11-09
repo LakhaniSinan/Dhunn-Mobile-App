@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Image, Platform, ScrollView, StyleSheet } from "react-native";
-import { TouchableOpacity, View } from "react-native-ui-lib";
-import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Header, Typography } from "../../components/atoms";
-import Slider from "./Slider";
-import SectionTitle from "./SectionTitle";
-import ImageCardList from "./ImageCardList";
-import ArtistList from "./ArtistList";
-import SongCard from "./SongList";
-import { COLORS, IMAGES, parseDuration, SCREENS } from "../../constants";
-import TabList from "./TabList";
-import { navigate, toggleDrawer } from "../../navigation/RootNavigation";
-import { FooterItem } from "../../components/atoms/FooterItem";
-import VideoCard from "./VideoCard";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { fetchHomeData } from "../../redux/slice/Home/homeSlice";
-import { fetchPlaylists } from "../../redux/slice/PlayList/createPlayList";
-import { fetchTopMedia, MediaItem } from "../../redux/slice/Tops/TopsSlice";
+import React, {useEffect, useState} from 'react';
+import {Image, Platform, ScrollView, StyleSheet} from 'react-native';
+import {TouchableOpacity, View} from 'react-native-ui-lib';
+import SafeAreaContainer from '../../containers/SafeAreaContainer';
+import {Header, Typography} from '../../components/atoms';
+import Slider from './Slider';
+import SectionTitle from './SectionTitle';
+import ImageCardList from './ImageCardList';
+import ArtistList from './ArtistList';
+import SongCard from './SongList';
+import {COLORS, IMAGES, parseDuration, SCREENS} from '../../constants';
+import TabList from './TabList';
+import {navigate, toggleDrawer} from '../../navigation/RootNavigation';
+import {FooterItem} from '../../components/atoms/FooterItem';
+import VideoCard from './VideoCard';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
+import {fetchHomeData} from '../../redux/slice/Home/homeSlice';
+import {fetchPlaylists} from '../../redux/slice/PlayList/createPlayList';
+import {fetchTopMedia, MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import {
   addFavourite,
   playTrack,
   removeFavourite,
-} from "../../redux/slice/Player/mediaPlayerSlice";
-import TrackPlayer from "react-native-track-player";
-import ShimmerCards from "../../components/atoms/ShimmerCards";
-import ShimmerGridCard from "../../components/atoms/ShimmerGridCard";
-import SongGrid from "../../components/atoms/SongGrid";
-import AddToPlayListModal from "../../components/molucule/AddToPlayListModal";
+} from '../../redux/slice/Player/mediaPlayerSlice';
+import TrackPlayer from 'react-native-track-player';
+import ShimmerCards from '../../components/atoms/ShimmerCards';
+import ShimmerGridCard from '../../components/atoms/ShimmerGridCard';
+import SongGrid from '../../components/atoms/SongGrid';
+import AddToPlayListModal from '../../components/molucule/AddToPlayListModal';
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,12 +47,10 @@ const Home = () => {
     loading,
     error,
   } = useSelector((state: RootState) => state.home);
-  const { is_playlist } = useSelector(
-    (state: RootState) => state.playlistModal
-  );
+  const {is_playlist} = useSelector((state: RootState) => state.playlistModal);
   const tabs = [
-    { id: 0, label: "Audio", key: "audio" },
-    { id: 1, label: "Video", key: "video" },
+    {id: 0, label: 'Audio', key: 'audio'},
+    {id: 1, label: 'Video', key: 'video'},
   ];
   useEffect(() => {
     dispatch(fetchTopMedia());
@@ -64,11 +62,11 @@ const Home = () => {
 
   const getActiveData = () => {
     switch (tabs[activeTab].key) {
-      case "audio":
+      case 'audio':
         return audio;
-      case "video":
+      case 'video':
         return video;
-      case "movie":
+      case 'movie':
         return movie;
       default:
         return [];
@@ -76,9 +74,9 @@ const Home = () => {
   };
   const activeData = getActiveData();
   const handlePlay = async (item: MediaItem) => {
-    if (item.type === "audio") {
+    if (item.type === 'audio') {
       handleAudioSong(item);
-    } else if (item.type === "video") {
+    } else if (item.type === 'video') {
       await TrackPlayer.reset();
       navigate(SCREENS.VIDEO_PLAY);
     }
@@ -92,15 +90,15 @@ const Home = () => {
         id: i.id.toString(),
         url: i.file_path,
         title: i.title,
-        artist: i.artist?.name || "Unknown Artist",
+        artist: i.artist?.name || 'Unknown Artist',
         artwork: i.cover_image,
         duration: parseDuration(i.duration),
       });
       await TrackPlayer.play();
       dispatch(playTrack(i));
-      console.log("Now playing:", i.title);
+      console.log('Now playing:', i.title);
     } catch (error) {
-      console.error("Error playing track:", error);
+      console.error('Error playing track:', error);
     }
   };
 
@@ -110,8 +108,8 @@ const Home = () => {
 
   const handleLikeToggle = (i: MediaItem) => {
     i.is_favorite
-      ? dispatch(removeFavourite({ mediaId: i.id, type: "song" }))
-      : dispatch(addFavourite({ mediaId: i.id, type: "song" }));
+      ? dispatch(removeFavourite({mediaId: i.id, type: 'song'}))
+      : dispatch(addFavourite({mediaId: i.id, type: 'song'}));
   };
 
   const handleMore = () => {
@@ -120,21 +118,18 @@ const Home = () => {
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour >= 0 && currentHour < 5) {
-      return "Good Night"; // or "Late Night"
+      return 'Good Night'; // or "Late Night"
     } else if (currentHour < 12) {
-      return "Good Morning";
+      return 'Good Morning';
     } else if (currentHour < 18) {
-      return "Good Afternoon";
+      return 'Good Afternoon';
     } else {
-      return "Good Evening";
+      return 'Good Evening';
     }
   };
   return (
     <SafeAreaContainer safeArea={true}>
-      <View
-        paddingH-20
-        style={{ paddingTop: Platform.OS == "android" ? 20 : 0 }}
-      >
+      <View paddingH-20 style={{paddingTop: Platform.OS == 'android' ? 35 : 0}}>
         <Header onPressLeft={() => toggleDrawer()} />
       </View>
       <View style={styles.container}>
@@ -143,14 +138,17 @@ const Home = () => {
             <Slider />
           </View> */}
           <View marginT-20 flex-1 center row marginB-15>
-            <Image source={IMAGES.logo} style={{ width: 150, height: 100,resizeMode:'contain' }} />
+            <Image
+              source={IMAGES.logo}
+              style={{width: 150, height: 100, resizeMode: 'contain'}}
+            />
             <View marginB-10>
-              <View  center>
+              <View center>
                 <Typography size={20} color={COLORS.WHITE}>
                   {getGreeting()}
                 </Typography>
               </View>
-              <View  center>
+              <View center>
                 <Typography size={20} color={COLORS.WHITE}>
                   Welcome to Dhun
                 </Typography>
@@ -179,8 +177,8 @@ const Home = () => {
                   title="New Releases"
                   onPress={() =>
                     navigate(SCREENS.VIEW, {
-                      title: "New Releases",
-                      type: "new_release",
+                      title: 'New Releases',
+                      type: 'new_release',
                     })
                   }
                 />
@@ -198,8 +196,8 @@ const Home = () => {
                   title="Video Songs"
                   onPress={() =>
                     navigate(SCREENS.VIEW, {
-                      title: "Video Songs",
-                      type: "video_song",
+                      title: 'Video Songs',
+                      type: 'video_song',
                     })
                   }
                 />
@@ -217,8 +215,8 @@ const Home = () => {
                   title="Top Artists"
                   onPress={() =>
                     navigate(SCREENS.VIEW, {
-                      title: "Top Artists",
-                      type: "top_artists",
+                      title: 'Top Artists',
+                      type: 'top_artists',
                     })
                   }
                 />
@@ -236,8 +234,8 @@ const Home = () => {
                   title="Trending Songs"
                   onPress={() =>
                     navigate(SCREENS.VIEW, {
-                      title: "Trending Songs",
-                      type: "trending_song",
+                      title: 'Trending Songs',
+                      type: 'trending_song',
                     })
                   }
                 />
@@ -245,7 +243,7 @@ const Home = () => {
               <ImageCardList customImages={trendingSongs} />
             </React.Fragment>
           )}
-          {loading ? (
+          {/* {loading ? (
             <ShimmerGridCard />
           ) : (
             <React.Fragment>
@@ -254,15 +252,15 @@ const Home = () => {
                   title="Pick Your Mood"
                   onPress={() =>
                     navigate(SCREENS.VIEW, {
-                      title: "Pick Your Mood",
-                      type: "pick_your_mode",
+                      title: 'Pick Your Mood',
+                      type: 'pick_your_mode',
                     })
                   }
                 />
               </View>
               <ImageCardList customImages={pickYourMode} />
             </React.Fragment>
-          )}
+          )} */}
         </ScrollView>
       </View>
       <AddToPlayListModal is_playlist={is_playlist} />
@@ -276,13 +274,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   footer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: COLORS.BLACK,
   },
 });

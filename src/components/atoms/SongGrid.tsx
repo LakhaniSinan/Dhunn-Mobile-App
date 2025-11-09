@@ -1,7 +1,7 @@
-import React from "react";
-import { FlatList, View, StyleSheet } from "react-native";
-import { MediaItem } from "../../redux/slice/Tops/TopsSlice"; // Assuming you have MediaItem type
-import SongCard from "../../screens/HomeScreens/SongList";
+import React from 'react';
+import {FlatList, View, StyleSheet} from 'react-native';
+import {MediaItem} from '../../redux/slice/Tops/TopsSlice'; // Assuming you have MediaItem type
+import SongCard from '../../screens/HomeScreens/SongList';
 
 interface SongGridProps {
   data: MediaItem[];
@@ -21,11 +21,12 @@ const SongGrid: React.FC<SongGridProps> = ({
   return (
     <FlatList
       data={data}
-      keyExtractor={(item) => item.id.toString()} // Ensure unique IDs
-      numColumns={2} // Render in 2 columns
+      keyExtractor={item => item.id.toString()} // Ensure unique IDs
+      horizontal
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.gridContainer}
-      columnWrapperStyle={styles.row} // Maintain spacing between rows
-      renderItem={({ item }) => (
+      // columnWrapperStyle={styles.row} // Maintain spacing between rows
+      renderItem={({item}) => (
         <View style={styles.cardContainer}>
           <SongCard
             track={item}
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     padding: 10, // Adjust for overall grid padding
   },
   row: {
-    justifyContent: "space-between", // Ensures proper spacing between columns
+    justifyContent: 'space-between', // Ensures proper spacing between columns
     marginBottom: 10, // Spacing between rows
   },
   cardContainer: {
