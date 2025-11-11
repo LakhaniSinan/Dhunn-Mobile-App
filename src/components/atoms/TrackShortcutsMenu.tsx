@@ -1,18 +1,18 @@
 import {MenuView} from '@react-native-menu/menu';
 import {PropsWithChildren} from 'react';
-import TrackPlayer, {Track} from 'react-native-track-player';
+import {Alert, Platform, Share} from 'react-native';
+import TrackPlayer from 'react-native-track-player';
+import {useDispatch} from 'react-redux';
 import {match} from 'ts-pattern';
-import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
-import {COLORS, IMAGES, parseDuration} from '../../constants';
+import {COLORS, parseDuration} from '../../constants';
 import {
   addFavourite,
   addToQueue,
   removeFavourite,
 } from '../../redux/slice/Player/mediaPlayerSlice';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../../redux/store';
-import {Alert, Platform, Share} from 'react-native';
 import {openPlaylistModel} from '../../redux/slice/PlayList//playListModal';
+import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
+import {AppDispatch} from '../../redux/store';
 type TrackShortcutsMenuProps = PropsWithChildren<{track: MediaItem}>;
 
 export const TrackShortcutsMenu = ({
@@ -21,6 +21,8 @@ export const TrackShortcutsMenu = ({
 }: TrackShortcutsMenuProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const isFavorite = track.is_favorite;
+  const isPlaylist = track.is_playlist;
+  console.log(isPlaylist, 'tracktracktracktracktracktrack');
 
   const onShare = async () => {
     try {
@@ -122,7 +124,7 @@ export const TrackShortcutsMenu = ({
         },
         {
           id: 'add-to-playlist',
-          title: 'Add to playlist',
+          title: isPlaylist ? 'Remove from playlist' : 'Add to playlist',
           // image: Platform.select({
           //   ios: 'download',
           //   android: 'ic_menu_download',

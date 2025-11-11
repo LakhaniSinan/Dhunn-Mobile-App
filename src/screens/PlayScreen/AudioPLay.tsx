@@ -46,6 +46,7 @@ const AudioPLay = () => {
     isShuffled,
     queue,
   } = useSelector((state: RootState) => state.mediaPlayer);
+  const {playlistDetails} = useSelector((state: RootState) => state.playList);
 
   const [expanded, setExpanded] = useState(false);
   const [myQueue, setMyQueue] = useState<Track[]>([]);
@@ -89,6 +90,11 @@ const AudioPLay = () => {
       console.error('Error removing track:', error);
     }
   };
+
+  let findTrack = playlistDetails?.media?.find(
+    trackkk => trackkk?.id == currentTrack?.id,
+  );
+
   return (
     <SafeAreaContainer safeArea={true}>
       <View style={styles.overlayContainer}>
@@ -174,7 +180,7 @@ const AudioPLay = () => {
                     />
                   </View>
 
-                  <TrackShortcutsMenu track={currentTrack}>
+                  <TrackShortcutsMenu track={findTrack || currentTrack}>
                     <Image source={IMAGES.dotsVertical} style={styles.icon} />
                   </TrackShortcutsMenu>
                   {/* <Icon

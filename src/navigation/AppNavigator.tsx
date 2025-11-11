@@ -42,6 +42,7 @@ const AppNavigator = () => {
         }}>
         <Drawer.Screen name={SCREENS.STACK} component={StackCompoonent} />
         <Drawer.Screen name={SCREENS.MY_LIBRARY} component={Library} />
+        <Drawer.Screen name={SCREENS.AUDIO_PLAY} component={AudioPLay} />
         <Drawer.Screen name={SCREENS.LANGUAGE} component={Language} />
         <Drawer.Screen name={SCREENS.ARTIST} component={Artist} />
         <Drawer.Screen name={SCREENS.SEARCH} component={SearchScreen} />

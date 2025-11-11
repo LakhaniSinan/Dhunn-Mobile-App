@@ -1,10 +1,15 @@
-import React, { Component, useContext, useMemo, useState } from "react";
-import { StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { Text, View } from "react-native-ui-lib";
-import { COLORS, screenHeight, screenWidth } from "../../constants";
+import React, {Component, useContext, useMemo, useState} from 'react';
+import {StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {Text, View} from 'react-native-ui-lib';
+import {COLORS, screenHeight, screenWidth} from '../../constants';
 
 const TabList = (props: any) => {
-  const { data = [], onSelect = () => { }, selected = 0, width=screenWidth(20) } = props;
+  const {
+    data = [],
+    onSelect = () => {},
+    selected = 0,
+    width = screenWidth(20),
+  } = props;
   return (
     <View style={styles.tabView}>
       {data.map((item: any, i: any) => (
@@ -14,16 +19,15 @@ const TabList = (props: any) => {
             styles.activeTabText,
             {
               backgroundColor: selected == i ? COLORS.PRIMARY : '#49001E',
-              borderColor: "red",
+              borderColor: 'red',
               borderWidth: 1,
-              width:width
+              width: width,
             },
           ]}
           onPress={() => {
-            onSelect(i)
-          }}
-        >
-          <Text extraSmall12 semibold color={"#fff"}>
+            onSelect(i);
+          }}>
+          <Text extraSmall12 semibold color={'#fff'}>
             {item.label}
           </Text>
         </TouchableOpacity>
@@ -34,20 +38,20 @@ const TabList = (props: any) => {
 
 const styles = StyleSheet.create({
   tabView: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    gap:10
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    gap: 10,
   },
   activeTabText: {
     width: screenWidth(20),
-    height:screenHeight(3.5),
-    alignItems: "center",
-    justifyContent: "center",
+    height: screenHeight(3.5),
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 30,
   },
   tabText: {
-    color: "#000",
+    color: '#000',
   },
 });
 

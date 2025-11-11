@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 import {
   FlatList,
   Text,
@@ -7,38 +7,38 @@ import {
   Image,
   TextInput,
   Modal,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import UpdatePlaylistModal from "./UpdatePlaylistModalProps ";
-import { PlaylistData } from "../../redux/slice/PlayList/types";
-import { AppDispatch, RootState } from "../../redux/store";
-import { createPlaylist } from "../../redux/slice/PlayList/createPlayList";
-import Icon from "../atoms/Icon";
-import { COLORS, FONTS, SCREENS } from "../../constants";
-import { Typography } from "../atoms";
-import { navigate } from "../../navigation/RootNavigation";
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import UpdatePlaylistModal from './UpdatePlaylistModalProps ';
+import {PlaylistData} from '../../redux/slice/PlayList/types';
+import {AppDispatch, RootState} from '../../redux/store';
+import {createPlaylist} from '../../redux/slice/PlayList/createPlayList';
+import Icon from '../atoms/Icon';
+import {COLORS, FONTS, SCREENS} from '../../constants';
+import {Typography} from '../atoms';
+import {navigate} from '../../navigation/RootNavigation';
 
 interface TabContentProps {
   items: PlaylistData[];
 }
 
-const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
+const PlayListContent: React.FC<TabContentProps> = ({items}) => {
   const dispatch = useDispatch<AppDispatch>();
   const playlists = useSelector((state: RootState) => state.playList.playlists);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isPlaylistModalOpen, setPlaylistModalOpen] = useState(false);
-  const [playlistName, setPlaylistName] = useState("");
+  const [playlistName, setPlaylistName] = useState('');
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<number | null>(
-    null
+    null,
   );
-  const [currentPlaylistName, setCurrentPlaylistName] = useState<string>("");
+  const [currentPlaylistName, setCurrentPlaylistName] = useState<string>('');
 
   const handleCreatePlaylist = () => {
     const formData = new FormData();
-    formData.append("name", playlistName);
+    formData.append('name', playlistName);
     dispatch(createPlaylist(formData));
     setModalOpen(false);
-    setPlaylistName("");
+    setPlaylistName('');
   };
 
   const handleEditPlaylist = (playlistId: number, playlistName: string) => {
@@ -50,33 +50,29 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
   const closeModal = () => {
     setPlaylistModalOpen(false);
     setSelectedPlaylistId(null);
-    setCurrentPlaylistName("");
+    setCurrentPlaylistName('');
   };
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{flex: 1, padding: 10}}>
       {playlists.length === 0 && (
         <View
           style={{
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
             marginTop: 50,
-          }}
-        >
-          <Text style={{ fontSize: 16, color: "#555" }}>
-            No playlists found.
-          </Text>
+          }}>
+          <Text style={{fontSize: 16, color: '#555'}}>No playlists found.</Text>
           <TouchableOpacity
             onPress={() => setModalOpen(true)}
             style={{
               marginTop: 20,
-              backgroundColor: "#007BFF",
+              backgroundColor: '#007BFF',
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 5,
-            }}
-          >
-            <Text style={{ color: "#fff" }}>Add Playlist</Text>
+            }}>
+            <Text style={{color: '#fff'}}>Add Playlist</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -84,17 +80,22 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
       <FlatList
         data={items}
         numColumns={2}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        keyExtractor={item => item.id.toString()}
+        renderItem={({item}) => (
           <TouchableOpacity
-            onPress={() => navigate(SCREENS.PLAYLIST_DETAILS, { id: item.id })}
-            style={{ flex: 1, alignItems: "center", margin: 10 }}
-          >
-            <View style={{ position: "relative" }}>
+            onPress={() => {
+              // navigate(SCREENS.PLAYLIST_DETAILS, {id: item.id});
+              navigate(SCREENS.STACK, {
+                screen: SCREENS.PLAYLIST_DETAILS,
+                params: {id: item.id},
+              });
+            }}
+            style={{flex: 1, alignItems: 'center', margin: 10}}>
+            <View style={{position: 'relative'}}>
               <TouchableOpacity
                 onPress={() => handleEditPlaylist(item.id, item.name)}
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   top: -10,
                   right: -10,
                   zIndex: 10,
@@ -102,15 +103,14 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
                   borderRadius: 100,
                   width: 30,
                   height: 30,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
                 <Icon vector="FontAwesome6" name="pen" color="#fff" size={15} />
               </TouchableOpacity>
               <Image
                 source={{
-                  uri: item.cover_image || "fallback_image_url", // Provide a fallback URL for empty images
+                  uri: item.cover_image || 'fallback_image_url', // Provide a fallback URL for empty images
                 }}
                 style={{
                   width: 150,
@@ -131,27 +131,22 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
         visible={isModalOpen}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => setModalOpen(false)}
-      >
+        onRequestClose={() => setModalOpen(false)}>
         <View
           style={{
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        >
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
           <View
             style={{
-              backgroundColor: "#fff",
+              backgroundColor: '#fff',
               padding: 20,
               borderRadius: 10,
-              width: "80%",
-            }}
-          >
-            <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 20 }}
-            >
+              width: '80%',
+            }}>
+            <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 20}}>
               Create New Playlist
             </Text>
             <TextInput
@@ -160,7 +155,7 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
               placeholder="Playlist Name"
               style={{
                 height: 40,
-                borderColor: "#ccc",
+                borderColor: '#ccc',
                 borderWidth: 1,
                 borderRadius: 5,
                 paddingLeft: 10,
@@ -170,24 +165,22 @@ const PlayListContent: React.FC<TabContentProps> = ({ items }) => {
             <TouchableOpacity
               onPress={handleCreatePlaylist}
               style={{
-                backgroundColor: "#007BFF",
+                backgroundColor: '#007BFF',
                 paddingVertical: 10,
                 borderRadius: 5,
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "#fff" }}>Create Playlist</Text>
+                alignItems: 'center',
+              }}>
+              <Text style={{color: '#fff'}}>Create Playlist</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setModalOpen(false)}
               style={{
                 marginTop: 10,
-                alignItems: "center",
+                alignItems: 'center',
                 paddingVertical: 5,
-                backgroundColor: "#ccc",
+                backgroundColor: '#ccc',
                 borderRadius: 5,
-              }}
-            >
+              }}>
               <Text>Close</Text>
             </TouchableOpacity>
           </View>
