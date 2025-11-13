@@ -1,28 +1,43 @@
 import {MenuView} from '@react-native-menu/menu';
-import {PropsWithChildren} from 'react';
+import {PropsWithChildren, useEffect, useState} from 'react';
 import {Alert, Platform, Share} from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {match} from 'ts-pattern';
 import {COLORS, parseDuration} from '../../constants';
 import {
   addFavourite,
   addToQueue,
   removeFavourite,
+  removeFromQueue,
 } from '../../redux/slice/Player/mediaPlayerSlice';
 import {openPlaylistModel} from '../../redux/slice/PlayList//playListModal';
 import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
-import {AppDispatch} from '../../redux/store';
+import {AppDispatch, RootState} from '../../redux/store';
+import {handleDownloadSong} from '../../utils/function';
 type TrackShortcutsMenuProps = PropsWithChildren<{track: MediaItem}>;
 
 export const TrackShortcutsMenu = ({
+  showAddQueue = true,
   track,
   children,
 }: TrackShortcutsMenuProps) => {
   const dispatch = useDispatch<AppDispatch>();
+  const {queue} = useSelector((state: RootState) => state.mediaPlayer);
   const isFavorite = track.is_favorite;
   const isPlaylist = track.is_playlist;
-  console.log(isPlaylist, 'tracktracktracktracktracktrack');
+
+  const [isInQueueTrack, setIsInQueueTrack] = useState(false);
+  useEffect(() => {
+    const getQueue = async () => {
+      const trackPlayerqueue = await TrackPlayer.getQueue();
+      let findTrack = trackPlayerqueue.findIndex(
+        (song: any) => song.id == track.id.toString(),
+      );
+      if (findTrack !== -1) setIsInQueueTrack(true);
+    };
+    getQueue();
+  }, [queue]);
 
   const onShare = async () => {
     try {
@@ -55,15 +70,23 @@ export const TrackShortcutsMenu = ({
         dispatch(removeFavourite({mediaId: track.id, type: 'song'}));
       })
       .with('add-to-queue', async () => {
-        await TrackPlayer.add({
-          id: track.id.toString(),
-          url: track.file_path,
-          title: track.title,
-          artist: track.artist?.name || 'Unknown Artist',
-          artwork: track.cover_image,
-          duration: parseDuration(track.duration),
-        });
-        dispatch(addToQueue(track));
+        const queue = await TrackPlayer.getQueue();
+        const trackIndex = queue?.findIndex(t => t.id == track.id.toString());
+        if (isInQueueTrack && trackIndex !== -1) {
+          await TrackPlayer.remove([trackIndex]);
+          setIsInQueueTrack(false);
+          dispatch(removeFromQueue(track.id));
+        } else {
+          await TrackPlayer.add({
+            id: track.id.toString(),
+            url: track.file_path,
+            title: track.title,
+            artist: track.artist?.name || 'Unknown Artist',
+            artwork: track.cover_image,
+            duration: parseDuration(track.duration),
+          });
+          dispatch(addToQueue(track));
+        }
       })
       .with('share', async () => onShare())
       .with('add-to-playlist', async () =>
@@ -74,6 +97,9 @@ export const TrackShortcutsMenu = ({
           }),
         ),
       )
+      .with('download', async () => {
+        handleDownloadSong(track);
+      })
       .otherwise(() => console.warn(`Unknown menu action ${id}`));
   };
 
@@ -104,15 +130,15 @@ export const TrackShortcutsMenu = ({
             ? COLORS.BLACK
             : '',
         },
-        {
-          id: 'add-to-queue',
-          title: 'Add to Queue',
-          // image: Platform.select({
-          //   ios: 'plus',
-          //   android: 'ic_menu_add',
-          // }),
-          imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
-        },
+        ...(showAddQueue
+          ? [
+              {
+                id: 'add-to-queue',
+                title: `${isInQueueTrack ? 'Remove from' : 'Add to'} Queue`,
+                imageColor: Platform.OS === 'android' ? COLORS.BLACK : '',
+              },
+            ]
+          : []),
         {
           id: 'download',
           title: 'Download',

@@ -165,6 +165,9 @@ const mediaPlayerSlice = createSlice({
       state.currentTime = 0; // Reset currentTime to 0 when playing a new track
       state.isPlaying = false;
     },
+    setCurrentTrack: (state, action: PayloadAction<any>) => {
+      state.currentTrack = action.payload;
+    },
     pauseTrack: state => {
       state.isPlaying = false;
     },
@@ -345,6 +348,7 @@ export const {
   toggleShuffle,
   cycleRepeatMode,
   clearTrack,
+  setCurrentTrack,
 } = mediaPlayerSlice.actions;
 
 export default mediaPlayerSlice.reducer;

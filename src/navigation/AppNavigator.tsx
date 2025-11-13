@@ -24,6 +24,8 @@ import PlaylistDetails from '../screens/DrawerScreen/PlaylistDetails';
 import ProfileScreen from '../screens/DrawerScreen/ProfileScreen';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
+import {ActivityIndicator, Text, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -52,9 +54,35 @@ const AppNavigator = () => {
 };
 
 const StackCompoonent = () => {
-  const {currentTrack} = useSelector((state: RootState) => state.mediaPlayer);
+  const insets = useSafeAreaInsets();
+  const {downloadProgress} = useSelector(
+    (state: RootState) => state.downloadProgress,
+  );
+
   return (
     <>
+      {downloadProgress && (
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#252525',
+            position: 'absolute',
+            top: 0,
+            zIndex: 999,
+            width: '100%',
+            paddingTop: insets.top + 10,
+            paddingBottom: 10,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 12,
+          }}>
+          <ActivityIndicator size="small" color="#fff" />
+          <Text style={{color: '#fff'}}>
+            Downloading... {downloadProgress?.progress}%
+          </Text>
+        </View>
+      )}
+
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

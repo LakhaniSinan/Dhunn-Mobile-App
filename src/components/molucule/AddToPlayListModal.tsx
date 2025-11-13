@@ -14,9 +14,12 @@ import {AppDispatch, RootState} from '../../redux/store';
 import {
   addSongToPlaylist,
   createPlaylist,
+  fetchPlaylistDetails,
   removeSongFromPlaylist,
 } from '../../redux/slice/PlayList/createPlayList';
 import {closePlaylistModel} from '../../redux/slice/PlayList/playListModal';
+import {setCurrentTrack} from '../../redux/slice/Player/mediaPlayerSlice';
+import {fetchHomeData} from '../../redux/slice/Home/homeSlice';
 
 const {width} = Dimensions.get('window');
 
@@ -39,18 +42,19 @@ const AddToPlayListModal: React.FC<AddToPlayListModalProps> = ({
     const formData = new FormData();
     formData.append('media_id', mediaId);
     formData.append('playlist_id', id.toString());
-    console.log(mediaId);
     dispatch(addSongToPlaylist({formData, playlistId: id}))
       .unwrap()
-      .then(() => dispatch(closePlaylistModel()));
+      .then(() => {
+        dispatch(fetchHomeData());
+        dispatch(fetchPlaylistDetails(id));
+        dispatch(closePlaylistModel());
+      });
   };
 
   const handleRemoveToSong = (id: number) => {
     const formData = new FormData();
     formData.append('media_id', mediaId);
     formData.append('playlist_id', id.toString());
-    console.log(mediaId);
-
     dispatch(
       removeSongFromPlaylist({
         formData,
@@ -58,7 +62,11 @@ const AddToPlayListModal: React.FC<AddToPlayListModalProps> = ({
       }),
     )
       .unwrap()
-      .then(() => dispatch(closePlaylistModel()));
+      .then(() => {
+        dispatch(fetchHomeData());
+        dispatch(fetchPlaylistDetails(id));
+        dispatch(closePlaylistModel());
+      });
   };
 
   const handleCreatePlaylist = () => {

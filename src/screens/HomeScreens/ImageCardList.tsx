@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Image,
@@ -9,16 +9,22 @@ import {
   ViewStyle,
   ScrollView,
   FlatList,
-} from "react-native";
-import { IMAGES, parseDuration, screenHeight, screenWidth, SCREENS } from "../../constants";
-import { navigate } from "../../navigation/RootNavigation";
-import { MediaItem } from "../../redux/slice/Tops/TopsSlice";
-import { Typography } from "../../components/atoms";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import TrackPlayer from "react-native-track-player";
-import { playTrack } from "../../redux/slice/Player/mediaPlayerSlice";
-import { commonStyles } from "../../globalStyle";
+} from 'react-native';
+import {
+  IMAGES,
+  parseDuration,
+  screenHeight,
+  screenWidth,
+  SCREENS,
+} from '../../constants';
+import {navigate} from '../../navigation/RootNavigation';
+import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
+import {Typography} from '../../components/atoms';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from '../../redux/store';
+import TrackPlayer from 'react-native-track-player';
+import {playTrack} from '../../redux/slice/Player/mediaPlayerSlice';
+import {commonStyles} from '../../globalStyle';
 
 export interface TrackSlidesProps {
   cardStyle?: StyleProp<ViewStyle>;
@@ -34,9 +40,9 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const handlePlay = async (item: MediaItem) => {
-    if (item.type === "audio") {
+    if (item.type === 'audio') {
       handleAudioSong(item);
-    } else if (item.type === "video") {
+    } else if (item.type === 'video') {
       await TrackPlayer.reset();
       navigate(SCREENS.VIDEO_PLAY);
     }
@@ -50,23 +56,28 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
         id: i.id.toString(),
         url: i.file_path,
         title: i.title,
-        artist: i.artist?.name || "Unknown Artist",
+        artist: i.artist?.name || 'Unknown Artist',
         artwork: i.cover_image,
         duration: parseDuration(i.duration),
       });
       await TrackPlayer.play();
       dispatch(playTrack(i));
-      console.log("Now playing:", i.title);
+      console.log('Now playing:', i.title);
     } catch (error) {
-      console.error("Error playing track:", error);
+      console.error('Error playing track:', error);
     }
   };
 
   // Grid Item Renderer for FlatList
-  const renderItem = ({ item }: { item: MediaItem }) => (
-    <TouchableOpacity onPress={() => handlePlay(item)} style={[styles.artistItemContainer, cardStyle]}>
+  const renderItem = ({item}: {item: MediaItem}) => (
+    <TouchableOpacity
+      onPress={() => handlePlay(item)}
+      style={[styles.artistItemContainer, cardStyle]}>
       <View style={styles.imageContainer}>
-        <Image source={item?.cover_image ? { uri: item.cover_image } : IMAGES.userImg} style={styles.image} />
+        <Image
+          source={item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg}
+          style={styles.image}
+        />
       </View>
       <Typography textType="bold" numberOfLines={2} style={styles.artistName}>
         {item?.title}
@@ -80,7 +91,7 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
         <FlatList
           data={customImages}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           numColumns={2} // Dynamic number of columns
           // columnWrapperStyle={styles.columnWrapper} // Add padding between rows
           // contentContainerStyle={styles.flatListContent}
@@ -89,12 +100,23 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
         />
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {customImages.map((item) => (
-            <TouchableOpacity onPress={() => handlePlay(item)} style={[styles.artistItemContainer, cardStyle]} key={item.id}>
+          {customImages.map(item => (
+            <TouchableOpacity
+              onPress={() => handlePlay(item)}
+              style={[styles.artistItemContainer, cardStyle]}
+              key={item.id}>
               <View style={styles.imageContainer}>
-                <Image source={item?.cover_image ? { uri: item.cover_image } : IMAGES.userImg} style={styles.image} />
+                <Image
+                  source={
+                    item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg
+                  }
+                  style={styles.image}
+                />
               </View>
-              <Typography textType="bold" numberOfLines={2} style={styles.artistName} >
+              <Typography
+                textType="bold"
+                numberOfLines={2}
+                style={styles.artistName}>
                 {item?.title}
               </Typography>
             </TouchableOpacity>
@@ -105,7 +127,7 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
   );
 };
 
-const { width } = Dimensions.get("window");
+const {width} = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -116,8 +138,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   columnWrapper: {
-    flex:1,
-    justifyContent: "space-between",
+    flex: 1,
+    justifyContent: 'space-between',
   },
   artistItemContainer: {
     margin: 10,
@@ -128,20 +150,20 @@ const styles = StyleSheet.create({
     width: screenWidth(40),
     height: screenHeight(15),
     borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: "#231F25",
+    overflow: 'hidden',
+    backgroundColor: '#231F25',
     borderWidth: 1,
-    borderColor: "#2B2B2B",
+    borderColor: '#2B2B2B',
   },
   artistName: {
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 5,
     width: screenWidth(40),
   },
   image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 

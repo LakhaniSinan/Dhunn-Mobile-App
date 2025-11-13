@@ -1,6 +1,6 @@
-import { get } from "../../../utils/axios";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Artist } from "../Home/homeSlice";
+import {get} from '../../../utils/axios';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {Artist} from '../Home/homeSlice';
 
 export interface MediaItem {
   id: number;
@@ -20,14 +20,14 @@ export interface MediaItem {
     name: string;
   };
   racket_label: {
-    id: number,
-    name: string,
-    phone: string,
-    description: string,
-    status: string,
-    created_at: string,
-    updated_at: string,
-  }| null,
+    id: number;
+    name: string;
+    phone: string;
+    description: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+  } | null;
   language: {
     id: number;
     name: string;
@@ -58,25 +58,25 @@ const initialState: MediaState = {
 };
 
 export const fetchTopMedia = createAsyncThunk(
-  "media/fetchTopMedia",
+  'media/fetchTopMedia',
   async () => {
-    const response = await get({ url: "top/media" });
+    const response = await get({url: 'top/media'});
     return response.data;
-  }
+  },
 );
 
 const topSlice = createSlice({
-  name: "media",
+  name: 'media',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchTopMedia.pending, (state) => {
+      .addCase(fetchTopMedia.pending, state => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchTopMedia.fulfilled, (state, action) => {
-        const { audio, video, movie } = action.payload;
+        const {audio, video, movie} = action.payload;
         state.audio = audio;
         state.video = video;
         state.movie = movie;
@@ -84,7 +84,7 @@ const topSlice = createSlice({
       })
       .addCase(fetchTopMedia.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch top media";
+        state.error = action.error.message || 'Failed to fetch top media';
       });
   },
 });

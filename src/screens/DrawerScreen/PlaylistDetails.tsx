@@ -95,9 +95,10 @@ const PlaylistDetails = ({route}: any) => {
     dispatch(addQueueList(playlistDetails?.media));
 
     // Add the media to the Track Player
-    playlistDetails?.media.forEach((item: MediaItem) => {
+    playlistDetails?.media.forEach(async (item: MediaItem) => {
       if (item.type === 'audio') {
-        TrackPlayer.add({
+        await TrackPlayer.setupPlayer();
+        await TrackPlayer.add({
           id: item.id.toString(),
           url: item.file_path,
           title: item.title,

@@ -30,10 +30,12 @@ import {
 } from '../../redux/slice/Player/mediaPlayerSlice';
 import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import {TrackShortcutsMenu} from '../../components/atoms/TrackShortcutsMenu';
+import {getMediaById} from '../../redux/slice/Home/homeSlice';
 
 const AudioPLay = () => {
   const dispatch = useDispatch<AppDispatch>();
   const activeTrack = useActiveTrack();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {top, bottom} = useSafeAreaInsets();
   const {
@@ -47,6 +49,7 @@ const AudioPLay = () => {
     queue,
   } = useSelector((state: RootState) => state.mediaPlayer);
   const {playlistDetails} = useSelector((state: RootState) => state.playList);
+  const [mediaDetail, setMediaDetail] = useState<RootState | null>(null);
 
   const [expanded, setExpanded] = useState(false);
   const [myQueue, setMyQueue] = useState<Track[]>([]);
@@ -56,7 +59,25 @@ const AudioPLay = () => {
       setMyQueue(TrackPlayerqueue);
     };
     getQueue();
-  }, [queue]);
+  }, [queue, activeTrack]);
+  useEffect(() => {
+    handleGetMediaById();
+  }, [currentTrack, playlistDetails]);
+
+  const handleGetMediaById = () => {
+    setIsLoading(true);
+    dispatch(getMediaById(currentTrack?.id))
+      .unwrap()
+      .then(result => {
+        setMediaDetail(result.response);
+      })
+      .catch(error => {
+        console.log(error, 'errorrrrrrrrrrrrrrrr');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   if (!activeTrack) {
     return (
@@ -95,6 +116,12 @@ const AudioPLay = () => {
     trackkk => trackkk?.id == currentTrack?.id,
   );
 
+  const uniqueTracks = myQueue
+    .filter(
+      (track, index, self) => index === self.findIndex(t => t.id === track.id),
+    )
+    .filter(track => track.id !== activeTrack?.id.toString());
+
   return (
     <SafeAreaContainer safeArea={true}>
       <View style={styles.overlayContainer}>
@@ -105,7 +132,9 @@ const AudioPLay = () => {
           <Header onPressLeft={() => toggleDrawer()} />
         </View>
 
-        <ScrollView>
+        <ScrollView
+          contentContainerStyle={{paddingBottom: 50}}
+          showsVerticalScrollIndicator={false}>
           <View style={styles.downButtonContainer}>
             <TouchableOpacity
               onPress={() => onBack()}
@@ -180,9 +209,20 @@ const AudioPLay = () => {
                     />
                   </View>
 
-                  <TrackShortcutsMenu track={findTrack || currentTrack}>
-                    <Image source={IMAGES.dotsVertical} style={styles.icon} />
-                  </TrackShortcutsMenu>
+                  {isLoading ? (
+                    <ActivityIndicator size={22} color={'white'} />
+                  ) : (
+                    mediaDetail && (
+                      <TrackShortcutsMenu
+                        track={mediaDetail}
+                        showAddQueue={false}>
+                        <Image
+                          source={IMAGES.dotsVertical}
+                          style={styles.icon}
+                        />
+                      </TrackShortcutsMenu>
+                    )
+                  )}
                   {/* <Icon
                     vector="SimpleLineIcons"
                     name={'options-vertical'}
@@ -218,48 +258,47 @@ const AudioPLay = () => {
             <PlayerVolumeBar style={{marginTop: 'auto', marginBottom: 30}} />
           </View>
           <View gap-10>
-            {myQueue.length > 1 &&
-              myQueue.map(i => (
+            {uniqueTracks?.map(i => (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  gap: 10,
+                  justifyContent: 'space-between',
+                  backgroundColor: '#231F25',
+                  borderRadius: 10,
+                  marginBottom: 10,
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: '#2B2B2B',
+                  alignItems: 'center',
+                }}>
                 <View
                   style={{
-                    flex: 1,
                     flexDirection: 'row',
                     gap: 10,
-                    justifyContent: 'space-between',
-                    backgroundColor: '#231F25',
-                    borderRadius: 10,
-                    marginBottom: 10,
-                    padding: 10,
-                    borderWidth: 1,
-                    borderColor: '#2B2B2B',
                     alignItems: 'center',
                   }}>
-                  <View
+                  <Image
+                    source={{uri: i.artwork}}
                     style={{
-                      flexDirection: 'row',
-                      gap: 10,
-                      alignItems: 'center',
-                    }}>
-                    <Image
-                      source={{uri: i.artwork}}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 10,
-                        resizeMode: 'cover',
-                      }}
-                    />
-                    <Typography textType="bold">{i.title}</Typography>
-                  </View>
-                  <Icon
-                    vector="Entypo"
-                    name="circle-with-minus"
-                    color={COLORS.PRIMARY}
-                    size={25}
-                    onPress={() => handleRemoveTrack(i.id)}
+                      width: 50,
+                      height: 50,
+                      borderRadius: 10,
+                      resizeMode: 'cover',
+                    }}
                   />
+                  <Typography textType="bold">{i.title}</Typography>
                 </View>
-              ))}
+                <Icon
+                  vector="Entypo"
+                  name="circle-with-minus"
+                  color={COLORS.PRIMARY}
+                  size={25}
+                  onPress={() => handleRemoveTrack(i.id)}
+                />
+              </View>
+            ))}
           </View>
         </ScrollView>
       </View>

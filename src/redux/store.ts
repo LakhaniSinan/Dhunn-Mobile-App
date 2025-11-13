@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {configureStore} from '@reduxjs/toolkit';
 import searchModelSlice from './slice/Search/searchModelSlice';
 import SidebarSlice from './slice/Sidebar/SidebarSlice';
 import userReducer from './slice/User/userSlice';
@@ -15,6 +15,7 @@ import searchSlice from './slice/Search/searchSlice';
 import languageSlice from './slice/language/languageSlice';
 import languageMediaSlice from './slice/language/languageMediaSlice';
 import playlistModelSlice from './slice/PlayList/playListModal';
+import downloadProgressReducer from './slice/DownloadProgress/downloadProgressSlice';
 
 export const store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ export const store = configureStore({
     languages: languageSlice,
     languageMedia: languageMediaSlice,
     playlistModal: playlistModelSlice,
+    downloadProgress: downloadProgressReducer,
   },
 });
 
