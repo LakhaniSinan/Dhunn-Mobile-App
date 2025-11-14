@@ -3,10 +3,10 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, {Event} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, IMAGES, SCREENS} from '../../constants';
 import {navigate, onBack} from '../../navigation/RootNavigation';
@@ -14,11 +14,13 @@ import {
   addFavourite,
   clearTrack,
   removeFavourite,
+  setCurrentTrack,
 } from '../../redux/slice/Player/mediaPlayerSlice';
 import {AppDispatch, RootState} from '../../redux/store';
 import {PlayPauseButton, SkipToNextButton} from '../molucule/PlayerControls';
 import Icon from './Icon';
 import {MovingText} from './MovingText';
+import {getMediaById} from '../../redux/slice/Home/homeSlice';
 
 export const FooterItem = (props: any) => {
   const navigation = useNavigation();
@@ -36,6 +38,48 @@ export const FooterItem = (props: any) => {
   } = useSelector((state: RootState) => state.mediaPlayer);
   const route = useRoute();
   const routeName = getFocusedRouteNameFromRoute(route);
+
+  useEffect(() => {
+    const listener = TrackPlayer.addEventListener(
+      Event.PlaybackActiveTrackChanged,
+      async (event: any) => {
+        console.log('Active track changed:', event);
+
+        const activeTrackIndex = event.index;
+        const activeTrack = event.track;
+
+        // Option 1: Track object is already included (modern versions)
+        if (activeTrack) {
+          console.log('Active track object:', activeTrack);
+          dispatch(getMediaById(activeTrack?.id))
+            .unwrap()
+            .then(result => {
+              dispatch(setCurrentTrack(result.response));
+            })
+            .catch(err => console.log('getMediaById error:', err));
+          return;
+        }
+
+        // Option 2: Need to fetch manually by index
+        if (typeof activeTrackIndex === 'number') {
+          const track = await TrackPlayer.getTrack(activeTrackIndex);
+          if (track) {
+            console.log('Fetched active track by index:', track);
+            dispatch(getMediaById(track?.id))
+              .unwrap()
+              .then(result => {
+                dispatch(setCurrentTrack(result.response));
+              })
+              .catch(err => console.log('getMediaById error:', err));
+          }
+        }
+      },
+    );
+
+    return () => {
+      listener.remove();
+    };
+  }, [dispatch]);
 
   const handleLikeToggle = () => {
     currentTrack.is_favorite

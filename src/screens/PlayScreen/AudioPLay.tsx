@@ -64,6 +64,8 @@ const AudioPLay = () => {
     handleGetMediaById();
   }, [currentTrack, playlistDetails]);
 
+  console.log(myQueue, 'myQueuemyQueuemyQueue');
+
   const handleGetMediaById = () => {
     setIsLoading(true);
     dispatch(getMediaById(currentTrack?.id))

@@ -1,7 +1,7 @@
 import {MenuView} from '@react-native-menu/menu';
 import {PropsWithChildren, useEffect, useState} from 'react';
 import {Alert, Platform, Share} from 'react-native';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, {useActiveTrack} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {match} from 'ts-pattern';
 import {COLORS, parseDuration} from '../../constants';
@@ -22,6 +22,7 @@ export const TrackShortcutsMenu = ({
   track,
   children,
 }: TrackShortcutsMenuProps) => {
+  const activeTrack = useActiveTrack();
   const dispatch = useDispatch<AppDispatch>();
   const {queue} = useSelector((state: RootState) => state.mediaPlayer);
   const isFavorite = track.is_favorite;
@@ -37,7 +38,7 @@ export const TrackShortcutsMenu = ({
       if (findTrack !== -1) setIsInQueueTrack(true);
     };
     getQueue();
-  }, [queue]);
+  }, [queue, activeTrack]);
 
   const onShare = async () => {
     try {
