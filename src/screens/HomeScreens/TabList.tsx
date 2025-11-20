@@ -21,7 +21,7 @@ const TabList = (props: any) => {
               backgroundColor: selected == i ? COLORS.PRIMARY : '#49001E',
               borderColor: 'red',
               borderWidth: 1,
-              width: width,
+              // width: width,
             },
           ]}
           onPress={() => {
@@ -44,9 +44,10 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   activeTabText: {
-    width: screenWidth(20),
+    // width: screenWidth(20),
     height: screenHeight(3.5),
     alignItems: 'center',
+    paddingHorizontal: 12,
     justifyContent: 'center',
     borderRadius: 30,
   },

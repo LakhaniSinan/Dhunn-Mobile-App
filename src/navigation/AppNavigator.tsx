@@ -44,7 +44,7 @@ const AppNavigator = () => {
         }}>
         <Drawer.Screen name={SCREENS.STACK} component={StackCompoonent} />
         <Drawer.Screen name={SCREENS.MY_LIBRARY} component={Library} />
-        <Drawer.Screen name={SCREENS.AUDIO_PLAY} component={AudioPLay} />
+        <Drawer.Screen name={SCREENS.HOME} component={Home} />
         <Drawer.Screen name={SCREENS.LANGUAGE} component={Language} />
         <Drawer.Screen name={SCREENS.ARTIST} component={Artist} />
         <Drawer.Screen name={SCREENS.SEARCH} component={SearchScreen} />
@@ -67,10 +67,10 @@ const StackCompoonent = () => {
             alignItems: 'center',
             backgroundColor: '#252525',
             position: 'absolute',
-            top: 0,
+            top: insets.top,
             zIndex: 999,
             width: '100%',
-            paddingTop: insets.top + 10,
+            paddingTop: 10,
             paddingBottom: 10,
             flexDirection: 'row',
             justifyContent: 'center',

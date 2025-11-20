@@ -25,6 +25,8 @@ import {AppDispatch} from '../../redux/store';
 import TrackPlayer from 'react-native-track-player';
 import {playTrack} from '../../redux/slice/Player/mediaPlayerSlice';
 import {commonStyles} from '../../globalStyle';
+import {useNavigation} from '@react-navigation/native';
+import {handleAudioSong} from '../../utils/function';
 
 export interface TrackSlidesProps {
   cardStyle?: StyleProp<ViewStyle>;
@@ -37,35 +39,17 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
   customImages,
   columns,
 }) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
 
   const handlePlay = async (item: MediaItem) => {
     if (item.type === 'audio') {
-      handleAudioSong(item);
+      handleAudioSong(item, navigation);
     } else if (item.type === 'video') {
       await TrackPlayer.reset();
       navigate(SCREENS.VIDEO_PLAY);
     }
     dispatch(playTrack(item));
-  };
-
-  const handleAudioSong = async (i: MediaItem) => {
-    try {
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        id: i.id.toString(),
-        url: i.file_path,
-        title: i.title,
-        artist: i.artist?.name || 'Unknown Artist',
-        artwork: i.cover_image,
-        duration: parseDuration(i.duration),
-      });
-      await TrackPlayer.play();
-      dispatch(playTrack(i));
-      console.log('Now playing:', i.title);
-    } catch (error) {
-      console.error('Error playing track:', error);
-    }
   };
 
   // Grid Item Renderer for FlatList
@@ -163,7 +147,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
 });
 

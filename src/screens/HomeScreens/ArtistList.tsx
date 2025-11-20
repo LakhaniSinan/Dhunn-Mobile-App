@@ -31,7 +31,7 @@ const ArtistList: React.FC<ArtistSlidesProps> = ({
       style={styles.artistItemContainer}>
       <View style={styles.imageContainer}>
         <Image
-          source={item?.image !== null ? {uri: item.image} : IMAGES.userImg}
+          source={item?.image ? {uri: item.image} : IMAGES.userImg}
           style={styles.artistImage}
         />
       </View>

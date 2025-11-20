@@ -1,20 +1,23 @@
 import {MenuView} from '@react-native-menu/menu';
 import {PropsWithChildren, useEffect, useState} from 'react';
 import {Alert, Platform, Share} from 'react-native';
-import TrackPlayer, {useActiveTrack} from 'react-native-track-player';
+import TrackPlayer, {Track, useActiveTrack} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {match} from 'ts-pattern';
 import {COLORS, parseDuration} from '../../constants';
 import {
   addFavourite,
   addToQueue,
+  clearTrack,
   removeFavourite,
   removeFromQueue,
 } from '../../redux/slice/Player/mediaPlayerSlice';
 import {openPlaylistModel} from '../../redux/slice/PlayList//playListModal';
 import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import {AppDispatch, RootState} from '../../redux/store';
-import {handleDownloadSong} from '../../utils/function';
+import {handleDownloadSong, handleSetRingtone} from '../../utils/function';
+import {useNavigation} from '@react-navigation/native';
+
 type TrackShortcutsMenuProps = PropsWithChildren<{track: MediaItem}>;
 
 export const TrackShortcutsMenu = ({
@@ -22,9 +25,11 @@ export const TrackShortcutsMenu = ({
   track,
   children,
 }: TrackShortcutsMenuProps) => {
+  const navigation = useNavigation();
   const activeTrack = useActiveTrack();
   const dispatch = useDispatch<AppDispatch>();
   const {queue} = useSelector((state: RootState) => state.mediaPlayer);
+  const [myQueue, setMyQueue] = useState<Track[]>([]);
   const isFavorite = track.is_favorite;
   const isPlaylist = track.is_playlist;
 
@@ -32,6 +37,7 @@ export const TrackShortcutsMenu = ({
   useEffect(() => {
     const getQueue = async () => {
       const trackPlayerqueue = await TrackPlayer.getQueue();
+      setMyQueue(trackPlayerqueue);
       let findTrack = trackPlayerqueue.findIndex(
         (song: any) => song.id == track.id.toString(),
       );
@@ -71,12 +77,34 @@ export const TrackShortcutsMenu = ({
         dispatch(removeFavourite({mediaId: track.id, type: 'song'}));
       })
       .with('add-to-queue', async () => {
-        const queue = await TrackPlayer.getQueue();
-        const trackIndex = queue?.findIndex(t => t.id == track.id.toString());
+        const trackIndex = myQueue.findIndex(t => t.id == track.id.toString());
+
+        const isCurrent = activeTrack?.id?.toString() === track.id.toString();
+
         if (isInQueueTrack && trackIndex !== -1) {
+          if (myQueue.length === 1) {
+            await TrackPlayer.stop();
+            await TrackPlayer.reset();
+            dispatch(clearTrack());
+            dispatch(removeFromQueue(track.id));
+            setIsInQueueTrack(false);
+            navigation.goBack();
+            return;
+          }
+
+          if (isCurrent) {
+            if (trackIndex < myQueue.length - 1) {
+              await TrackPlayer.skip(trackIndex + 1);
+              await TrackPlayer.play();
+            } else {
+              await TrackPlayer.skip(trackIndex - 1);
+              await TrackPlayer.play();
+            }
+          }
+
           await TrackPlayer.remove([trackIndex]);
-          setIsInQueueTrack(false);
           dispatch(removeFromQueue(track.id));
+          setIsInQueueTrack(false);
         } else {
           await TrackPlayer.add({
             id: track.id.toString(),
@@ -100,6 +128,9 @@ export const TrackShortcutsMenu = ({
       )
       .with('download', async () => {
         handleDownloadSong(track);
+      })
+      .with('add-to-ringtone', async () => {
+        handleSetRingtone(track?.title);
       })
       .otherwise(() => console.warn(`Unknown menu action ${id}`));
   };
@@ -131,7 +162,7 @@ export const TrackShortcutsMenu = ({
             ? COLORS.BLACK
             : '',
         },
-        ...(showAddQueue
+        ...(myQueue?.length > 1
           ? [
               {
                 id: 'add-to-queue',
@@ -152,6 +183,15 @@ export const TrackShortcutsMenu = ({
         {
           id: 'add-to-playlist',
           title: isPlaylist ? 'Remove from playlist' : 'Add to playlist',
+          // image: Platform.select({
+          //   ios: 'download',
+          //   android: 'ic_menu_download',
+          // }),
+          imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
+        },
+        {
+          id: 'add-to-ringtone',
+          title: 'Add to ringtone',
           // image: Platform.select({
           //   ios: 'download',
           //   android: 'ic_menu_download',

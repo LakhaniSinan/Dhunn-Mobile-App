@@ -5,6 +5,9 @@ export const authStyles = StyleSheet.create({
   flex: {flex: 1},
   scrollContainer: {
     paddingHorizontal: 20,
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeIcon: {
     position: 'absolute',
@@ -53,7 +56,7 @@ export const authStyles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 15,
     gap: 20,
   },
   input: {

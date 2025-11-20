@@ -64,8 +64,6 @@ const AudioPLay = () => {
     handleGetMediaById();
   }, [currentTrack, playlistDetails]);
 
-  console.log(myQueue, 'myQueuemyQueuemyQueue');
-
   const handleGetMediaById = () => {
     setIsLoading(true);
     dispatch(getMediaById(currentTrack?.id))
@@ -80,6 +78,8 @@ const AudioPLay = () => {
         setIsLoading(false);
       });
   };
+
+  console.log(myQueue, 'queuequeuequeuequeuequeuequeue');
 
   if (!activeTrack) {
     return (
@@ -114,15 +114,11 @@ const AudioPLay = () => {
     }
   };
 
-  let findTrack = playlistDetails?.media?.find(
-    trackkk => trackkk?.id == currentTrack?.id,
-  );
-
   const uniqueTracks = myQueue
     .filter(
       (track, index, self) => index === self.findIndex(t => t.id === track.id),
     )
-    .filter(track => track.id !== activeTrack?.id.toString());
+    .filter(track => track.id !== activeTrack?.id?.toString());
 
   return (
     <SafeAreaContainer safeArea={true}>
@@ -152,11 +148,11 @@ const AudioPLay = () => {
           <View style={styles.artworkImageContainer}>
             <Image
               source={{uri: activeTrack.artwork ?? IMAGES.imageAudio}}
-              resizeMode="cover"
+              resizeMode="contain"
               style={styles.artworkImage}
             />
           </View>
-          <View style={styles.card}>
+          {/* <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Typography size={18}>About Track</Typography>
               <TouchableOpacity
@@ -192,7 +188,8 @@ const AudioPLay = () => {
                 </Typography>
               </View>
             </CollapsableContainer>
-          </View>
+          </View> */}
+          {console.log(activeTrack?.title, 'asdlkasdalkj')}
           <View style={{flex: 1, gap: 20, top: 10}}>
             <View style={{marginTop: 'auto'}}>
               <View style={{height: 60}}>
@@ -205,7 +202,11 @@ const AudioPLay = () => {
                   {/* Track title */}
                   <View style={styles.trackTitleContainer}>
                     <MovingText
-                      text={activeTrack.title ?? ''}
+                      text={
+                        activeTrack?.title
+                          ?.replace(/_/g, ' ')
+                          .replace(/\.\w+$/, '') || ''
+                      }
                       animationThreshold={30}
                       style={styles.trackTitleText}
                     />
@@ -232,14 +233,16 @@ const AudioPLay = () => {
                     color={COLORS.PRIMARY}
                     // onPress={() => handleLikeToggle(currentTrack)}
                   /> */}
-                  <Icon
-                    vector="FontAwesome6Free-Regular"
-                    name={currentTrack.is_favorite ? 'heart' : 'heart-o'}
-                    size={20}
-                    color={COLORS.PRIMARY}
-                    style={{marginHorizontal: 14}}
-                    onPress={() => handleLikeToggle(currentTrack)}
-                  />
+                  {mediaDetail && (
+                    <Icon
+                      vector="FontAwesome6Free-Regular"
+                      name={currentTrack.is_favorite ? 'heart' : 'heart-o'}
+                      size={20}
+                      color={COLORS.PRIMARY}
+                      style={{marginHorizontal: 14}}
+                      onPress={() => handleLikeToggle(currentTrack)}
+                    />
+                  )}
                   <PlayerRepeatToggle size={30} style={{marginBottom: 6}} />
                 </View>
 
@@ -359,7 +362,6 @@ const styles = StyleSheet.create({
   artworkImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
     borderRadius: 12,
   },
   trackTitleContainer: {

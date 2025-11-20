@@ -2,11 +2,12 @@ import {
   getFocusedRouteNameFromRoute,
   useNavigation,
   useRoute,
+  useNavigationState,
 } from '@react-navigation/native';
-import React, {useEffect} from 'react';
+import React, {useActionState, useEffect} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import TrackPlayer, {Event} from 'react-native-track-player';
+import TrackPlayer, {Event, useActiveTrack} from 'react-native-track-player';
 import {useDispatch, useSelector} from 'react-redux';
 import {COLORS, IMAGES, SCREENS} from '../../constants';
 import {navigate, onBack} from '../../navigation/RootNavigation';
@@ -22,6 +23,21 @@ import Icon from './Icon';
 import {MovingText} from './MovingText';
 import {getMediaById} from '../../redux/slice/Home/homeSlice';
 
+const getActiveRouteName = (state: any): string => {
+  if (!state || !state.routes || state.index >= state.routes.length) {
+    return '';
+  }
+
+  const route = state.routes[state.index];
+
+  // If nested navigator
+  if (route.state) {
+    return getActiveRouteName(route.state);
+  }
+
+  return route.name;
+};
+
 export const FooterItem = (props: any) => {
   const navigation = useNavigation();
   const {onPressRight} = props;
@@ -36,8 +52,11 @@ export const FooterItem = (props: any) => {
     currentTime,
     isShuffled,
   } = useSelector((state: RootState) => state.mediaPlayer);
+  const activeTrack = useActiveTrack();
   const route = useRoute();
-  const routeName = getFocusedRouteNameFromRoute(route);
+  const currentRouteName = useNavigationState(state => {
+    return getActiveRouteName(state);
+  });
 
   useEffect(() => {
     const listener = TrackPlayer.addEventListener(
@@ -49,7 +68,7 @@ export const FooterItem = (props: any) => {
         const activeTrack = event.track;
 
         // Option 1: Track object is already included (modern versions)
-        if (activeTrack) {
+        if (activeTrack?.id) {
           console.log('Active track object:', activeTrack);
           dispatch(getMediaById(activeTrack?.id))
             .unwrap()
@@ -96,13 +115,18 @@ export const FooterItem = (props: any) => {
 
   if (
     currentTrack.file_path === '' ||
-    routeName == 'AudioPLay' ||
+    currentRouteName == 'AudioPLay' ||
     currentTrack.type !== 'audio'
   )
     return null;
   return (
     <TouchableOpacity
-      onPress={() => navigate(SCREENS.AUDIO_PLAY)}
+      onPress={() =>
+        //  navigate(SCREENS.AUDIO_PLAY)
+        navigate(SCREENS.STACK, {
+          screen: SCREENS.AUDIO_PLAY,
+        })
+      }
       style={{
         position: 'absolute',
         bottom: insets.bottom,
@@ -116,7 +140,11 @@ export const FooterItem = (props: any) => {
       }}>
       <>
         <Image
-          source={{uri: currentTrack.cover_image}}
+          source={{
+            uri:
+              activeTrack?.artwork ||
+              'https://dhunn.pk/dhun-uploads/user/N1iBvfGHD26KeekraPfU.png',
+          }}
           style={styles.trackArtworkImage}
         />
 
@@ -129,15 +157,17 @@ export const FooterItem = (props: any) => {
         </View>
 
         <View style={styles.trackControlsContainer}>
-          <TouchableOpacity onPress={handleLikeToggle}>
-            <Image
-              source={
-                currentTrack.is_favorite ? IMAGES.heart : IMAGES.heartLine
-              }
-              style={styles.icon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+          {!activeTrack?.url?.includes('file://') && (
+            <TouchableOpacity onPress={handleLikeToggle}>
+              <Image
+                source={
+                  currentTrack.is_favorite ? IMAGES.heart : IMAGES.heartLine
+                }
+                style={styles.icon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          )}
           <PlayPauseButton iconSize={24} />
           <SkipToNextButton iconSize={22} />
           <Icon

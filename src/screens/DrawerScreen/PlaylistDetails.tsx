@@ -1,31 +1,23 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  FlatList,
   ActivityIndicator,
   Platform,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../redux/store';
-import {fetchPlaylistDetails} from '../../redux/slice/PlayList/createPlayList';
-import {
-  addFavourite,
-  addQueueList,
-  playTrack,
-  removeFavourite,
-} from '../../redux/slice/Player/mediaPlayerSlice';
-import AddToPlayListModal from '../../components/molucule/AddToPlayListModal';
-import SongCardList from '../HomeScreens/SongCard';
-import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import TrackPlayer from 'react-native-track-player';
-import {navigate, toggleDrawer} from '../../navigation/RootNavigation';
-import {COLORS, parseDuration, SCREENS, screenWidth} from '../../constants';
-import SafeAreaContainer from '../../containers/SafeAreaContainer';
-import {Header, Typography} from '../../components/atoms';
 import {Button} from 'react-native-ui-lib';
-import SongGrid from '../../components/atoms/SongGrid';
+import {useDispatch, useSelector} from 'react-redux';
+import {Header, Typography} from '../../components/atoms';
+import AddToPlayListModal from '../../components/molucule/AddToPlayListModal';
+import {COLORS, parseDuration} from '../../constants';
+import SafeAreaContainer from '../../containers/SafeAreaContainer';
+import {toggleDrawer} from '../../navigation/RootNavigation';
+import {fetchPlaylistDetails} from '../../redux/slice/PlayList/createPlayList';
+import {addQueueList} from '../../redux/slice/Player/mediaPlayerSlice';
+import {AppDispatch, RootState} from '../../redux/store';
+import ImageCardList from '../HomeScreens/ImageCardList';
 
 const PlaylistDetails = ({route}: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,70 +39,39 @@ const PlaylistDetails = ({route}: any) => {
   const handleToggle = (id: number) => {
     setOpenCardId(openCardId === id ? null : id);
   };
-  const handlePlay = async (item: MediaItem) => {
-    if (item.type === 'audio') {
-      handleAudioSong(item);
-    } else if (item.type === 'video') {
-      await TrackPlayer.reset();
-      navigate(SCREENS.VIDEO_PLAY);
-    }
-    dispatch(playTrack(item));
-  };
 
-  const handleAudioSong = async (i: MediaItem) => {
+  const handleAddToQueue = async () => {
     try {
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        id: i.id.toString(),
-        url: i.file_path,
-        title: i.title,
-        artist: i.artist?.name || 'Unknown Artist',
-        artwork: i.cover_image,
-        duration: parseDuration(i.duration),
-      });
-      await TrackPlayer.play();
-      dispatch(playTrack(i));
-      console.log('Now playing:', i.title);
-    } catch (error) {
-      console.error('Error playing track:', error);
-    }
-  };
-
-  const handleDownload = () => {
-    // Download song
-  };
-
-  const handleLikeToggle = (i: MediaItem) => {
-    i.is_favorite
-      ? dispatch(removeFavourite({mediaId: i.id, type: 'song'}))
-      : dispatch(addFavourite({mediaId: i.id, type: 'song'}));
-  };
-
-  const handleMore = () => {
-    // More options
-  };
-
-  const handleAddToQueue = () => {
-    // Add the playlist media to the queue in Redux
-    dispatch(addQueueList(playlistDetails?.media));
-
-    // Add the media to the Track Player
-    playlistDetails?.media.forEach(async (item: MediaItem) => {
-      if (item.type === 'audio') {
-        await TrackPlayer.setupPlayer();
-        await TrackPlayer.add({
+      const audioTracks = playlistDetails?.media
+        ?.filter(item => item.type === 'audio')
+        .map(item => ({
           id: item.id.toString(),
           url: item.file_path,
           title: item.title,
           artist: item.artist?.name || 'Unknown Artist',
           artwork: item.cover_image,
           duration: parseDuration(item.duration),
-        });
-      }
-    });
+        }));
 
-    // Start playing the first track
-    TrackPlayer.play();
+      if (!audioTracks || audioTracks.length === 0) return;
+
+      // Add to Redux queue
+      dispatch(addQueueList(playlistDetails?.media));
+
+      // ADD ALL TRACKS AT ONCE (this preserves order)
+      await TrackPlayer.add(audioTracks);
+
+      // Start playing only if nothing is currently playing
+      const currentTrack = await TrackPlayer.getActiveTrack();
+      if (!currentTrack) {
+        await TrackPlayer.skip(audioTracks[0].id);
+        await TrackPlayer.play();
+      }
+
+      console.log('Playlist added to queue:', audioTracks.length);
+    } catch (err) {
+      console.log('Queue error:', err);
+    }
   };
 
   if (loading) {
@@ -150,15 +111,16 @@ const PlaylistDetails = ({route}: any) => {
             }}
           />
         </View>
+        {/* <SongGrid
+            data={playlistDetails?.media}
+            onPlay={handlePlay}
+            onLike={handleLikeToggle}
+            onMore={handleMore}
+            onDownload={handleDownload}
+          /> */}
         <View style={{flex: 1, paddingTop: 20}}>
-          {playlistDetails?.media.length !== 0 ? (
-            <SongGrid
-              data={playlistDetails?.media}
-              onPlay={handlePlay}
-              onLike={handleLikeToggle}
-              onMore={handleMore}
-              onDownload={handleDownload}
-            />
+          {playlistDetails?.media?.length > 0 ? (
+            <ImageCardList customImages={playlistDetails?.media} columns />
           ) : (
             <View
               style={{

@@ -43,7 +43,6 @@ const Login = () => {
 
     try {
       await dispatch(verifyCode({phone: phoneNumber, otp})).unwrap();
-      Alert.alert('Login successful!');
       // router.push("/");
     } catch (error: any) {
       Alert.alert(error[0] || 'OTP verification failed');
@@ -57,10 +56,7 @@ const Login = () => {
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          authStyles.scrollContainer,
-          {flexGrow: 1, alignItems: 'center', marginTop: 90},
-        ]}
+        contentContainerStyle={authStyles.scrollContainer}
         automaticallyAdjustKeyboardInsets>
         <Image
           source={IMAGES.logo}
@@ -79,14 +75,15 @@ const Login = () => {
 
         {showOtpField ? (
           <Animated.View
-            entering={FadeInUp.duration(500)}
-            exiting={FadeOutDown.duration(500)}
+            entering={FadeInUp.duration(1500)}
+            exiting={FadeOutDown}
             style={authStyles.animatedView}>
             <TextInput
               style={authStyles.inputContainer}
               placeholder="Phone Number"
               placeholderTextColor="#fff"
               keyboardType="phone-pad"
+              editable={false}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
@@ -109,8 +106,8 @@ const Login = () => {
           </Animated.View>
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(500)}
-            exiting={FadeOutDown.duration(500)}
+            entering={FadeInUp.duration(1000)}
+            exiting={FadeOutDown}
             style={authStyles.animatedView}>
             <TextInput
               style={authStyles.inputContainer}

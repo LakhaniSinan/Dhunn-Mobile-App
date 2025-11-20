@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {setItem} from '../../../utils/localStorage';
 
 interface UserDetails {
   id: number;
@@ -12,38 +13,44 @@ interface UserState {
   phoneNumber: string;
   isLoggedIn: boolean;
   token: string;
-  userDetails: UserDetails | null; 
+  userDetails: UserDetails | null;
 }
 
 const initialState: UserState = {
-  phoneNumber: "",
+  phoneNumber: '',
   isLoggedIn: false,
   token: '',
   userDetails: null,
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     loginUser: (
       state,
-      action: PayloadAction<{ phoneNumber: string; token: string; userDetails: UserDetails }>
+      action: PayloadAction<{
+        phoneNumber: string;
+        token: string;
+        userDetails: UserDetails;
+      }>,
     ) => {
       state.phoneNumber = action.payload.phoneNumber;
-      state.token = action.payload.token; 
-      state.userDetails = action.payload.userDetails; 
-      state.isLoggedIn = true; 
+      state.token = action.payload.token;
+      state.userDetails = action.payload.userDetails;
+      state.isLoggedIn = true;
     },
-    logoutUser: (state) => {
-      state.phoneNumber = "";
+    logoutUser: state => {
+      state.phoneNumber = '';
       state.token = '';
       state.userDetails = null;
       state.isLoggedIn = false;
+      setItem('token', null);
+      setItem('userDetails', null);
     },
   },
 });
 
-export const { loginUser, logoutUser } = userSlice.actions;
+export const {loginUser, logoutUser} = userSlice.actions;
 
 export default userSlice.reducer;
