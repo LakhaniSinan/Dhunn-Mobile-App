@@ -79,8 +79,6 @@ const AudioPLay = () => {
       });
   };
 
-  console.log(myQueue, 'queuequeuequeuequeuequeuequeue');
-
   if (!activeTrack) {
     return (
       <View style={[{justifyContent: 'center', flex: 1}]}>
@@ -189,7 +187,6 @@ const AudioPLay = () => {
               </View>
             </CollapsableContainer>
           </View> */}
-          {console.log(activeTrack?.title, 'asdlkasdalkj')}
           <View style={{flex: 1, gap: 20, top: 10}}>
             <View style={{marginTop: 'auto'}}>
               <View style={{height: 60}}>
