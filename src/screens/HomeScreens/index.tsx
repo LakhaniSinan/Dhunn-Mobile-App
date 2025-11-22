@@ -5,18 +5,20 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Header, Typography} from '../../components/atoms';
 import ShimmerGridCard from '../../components/atoms/ShimmerGridCard';
 import AddToPlayListModal from '../../components/molucule/AddToPlayListModal';
-import {COLORS, IMAGES, SCREENS} from '../../constants';
+import {COLORS, IMAGES, parseDuration, SCREENS} from '../../constants';
 import SafeAreaContainer from '../../containers/SafeAreaContainer';
 import {navigate, toggleDrawer} from '../../navigation/RootNavigation';
 import {fetchHomeData} from '../../redux/slice/Home/homeSlice';
 import {fetchPlaylists} from '../../redux/slice/PlayList/createPlayList';
-import {fetchTopMedia} from '../../redux/slice/Tops/TopsSlice';
+import {fetchTopMedia, MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import {AppDispatch, RootState} from '../../redux/store';
 import ArtistList from './ArtistList';
 import ImageCardList from './ImageCardList';
 import SectionTitle from './SectionTitle';
 import TabList from './TabList';
 import VideoCard from './VideoCard';
+import {addQueueList} from '../../redux/slice/Player/mediaPlayerSlice';
+import TrackPlayer from 'react-native-track-player';
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -75,6 +77,42 @@ const Home = () => {
       return 'Good Evening';
     }
   };
+
+  const handleAddToQueue = async (track: MediaItem) => {
+    try {
+      let filteredAudio = audio?.filter(item => item.id != track.id);
+      const audioTracks = filteredAudio
+        ?.filter(item => item.type === 'audio')
+        .map(item => ({
+          id: item.id.toString(),
+          url: item.file_path,
+          title: item.title,
+          artist: item.artist?.name || 'Unknown Artist',
+          artwork: item.cover_image,
+          duration: parseDuration(item.duration),
+        }));
+
+      if (!audioTracks || audioTracks.length === 0) return;
+
+      // Add to Redux queue
+      dispatch(addQueueList(audioTracks));
+
+      // ADD ALL TRACKS AT ONCE (this preserves order)
+      await TrackPlayer.add(audioTracks);
+
+      // Start playing only if nothing is currently playing
+      const currentTrack = await TrackPlayer.getActiveTrack();
+      if (!currentTrack) {
+        await TrackPlayer.skip(Number(audioTracks[0]?.id));
+        await TrackPlayer.play();
+      }
+
+      console.log('Playlist added to queue:', audioTracks.length);
+    } catch (err) {
+      console.log('Queue error:', err);
+    }
+  };
+
   return (
     <SafeAreaContainer safeArea={true}>
       <View paddingH-20 style={{paddingTop: Platform.OS == 'android' ? 35 : 0}}>
@@ -109,7 +147,10 @@ const Home = () => {
             </Typography>
           </View>
           <TabList data={tabs} onSelect={setActiveTab} selected={activeTab} />
-          <ImageCardList customImages={activeData} />
+          <ImageCardList
+            customImages={activeData}
+            handleAddQueue={handleAddToQueue}
+          />
 
           <React.Fragment>
             <View marginV-10>

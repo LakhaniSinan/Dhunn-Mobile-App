@@ -146,7 +146,7 @@ const AudioPLay = () => {
           <View style={styles.artworkImageContainer}>
             <Image
               source={{uri: activeTrack.artwork ?? IMAGES.imageAudio}}
-              resizeMode="contain"
+              resizeMode="stretch"
               style={styles.artworkImage}
             />
           </View>
@@ -262,6 +262,7 @@ const AudioPLay = () => {
           <View gap-10>
             {uniqueTracks?.map(i => (
               <View
+                key={i.title}
                 style={{
                   flex: 1,
                   flexDirection: 'row',
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
     shadowRadius: 11.0,
     flexDirection: 'row',
     justifyContent: 'center',
-    height: 200,
+    height: 220,
   },
   artworkImage: {
     width: '100%',

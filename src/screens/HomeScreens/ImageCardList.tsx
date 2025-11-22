@@ -32,9 +32,11 @@ export interface TrackSlidesProps {
   cardStyle?: StyleProp<ViewStyle>;
   customImages: MediaItem[];
   columns?: boolean; // Optional: Number of columns for vertical layout
+  handleAddQueue?: (item: MediaItem) => void;
 }
 
 const ImageCardList: React.FC<TrackSlidesProps> = ({
+  handleAddQueue,
   cardStyle,
   customImages,
   columns,
@@ -45,6 +47,7 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
   const handlePlay = async (item: MediaItem) => {
     if (item.type === 'audio') {
       handleAudioSong(item, navigation);
+      handleAddQueue?.(item);
     } else if (item.type === 'video') {
       await TrackPlayer.reset();
       navigate(SCREENS.VIDEO_PLAY);
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'stretch',
   },
 });
 
