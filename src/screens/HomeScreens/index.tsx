@@ -118,148 +118,132 @@ const Home = () => {
       <View paddingH-20 style={{paddingTop: Platform.OS == 'android' ? 35 : 0}}>
         <Header onPressLeft={() => toggleDrawer()} />
       </View>
-      <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* <View height={150} marginB-60 marginT-10>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}>
+        {/* <View height={150} marginB-60 marginT-10>
             <Slider />
           </View> */}
-          <View marginT-20 flex-1 center row marginB-15>
-            <Image
-              source={IMAGES.logo}
-              style={{width: 150, height: 100, resizeMode: 'contain'}}
-            />
-            <View marginB-10>
-              <View center>
-                <Typography size={20} color={COLORS.WHITE}>
-                  {getGreeting()}
-                </Typography>
-              </View>
-              <View center>
-                <Typography size={20} color={COLORS.WHITE}>
-                  Welcome to Dhun
-                </Typography>
-              </View>
+        <View marginT-20 flex-1 center row marginB-15>
+          <Image
+            source={IMAGES.logo}
+            style={{width: 150, height: 100, resizeMode: 'contain'}}
+          />
+          <View marginB-10>
+            <View center>
+              <Typography size={20} color={COLORS.WHITE}>
+                {getGreeting()}
+              </Typography>
+            </View>
+            <View center>
+              <Typography size={20} color={COLORS.WHITE}>
+                Welcome to Dhun
+              </Typography>
             </View>
           </View>
-          <View marginB-20 paddingH-10>
-            <Typography size={20} color={COLORS.WHITE}>
-              Top Songs
-            </Typography>
-          </View>
-          <TabList data={tabs} onSelect={setActiveTab} selected={activeTab} />
+        </View>
+        <View marginB-20 paddingH-10>
+          <Typography size={20} color={COLORS.WHITE}>
+            Top Songs
+          </Typography>
+        </View>
+        <TabList data={tabs} onSelect={setActiveTab} selected={activeTab} />
+        <React.Fragment>
           <ImageCardList
             customImages={activeData}
             handleAddQueue={handleAddToQueue}
           />
+        </React.Fragment>
 
-          <React.Fragment>
-            <View marginV-10>
-              <SectionTitle
-                title="New Releases"
-                onPress={() =>
-                  navigate(SCREENS.VIEW, {
-                    title: 'New Releases',
-                    type: 'new_release',
-                  })
-                }
-              />
-            </View>
+        <React.Fragment>
+          <View marginV-10>
+            <SectionTitle
+              title="New Releases"
+              onPress={() =>
+                navigate(SCREENS.VIEW, {
+                  title: 'New Releases',
+                  type: 'new_release',
+                })
+              }
+            />
+          </View>
 
-            {loading ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <ShimmerGridCard />
-              </ScrollView>
-            ) : (
-              <ImageCardList customImages={newRelease} />
-            )}
-          </React.Fragment>
-
-          <React.Fragment>
-            <View marginV-10>
-              <SectionTitle
-                title="Video Songs"
-                onPress={() =>
-                  navigate(SCREENS.VIEW, {
-                    title: 'Video Songs',
-                    type: 'video_song',
-                  })
-                }
-              />
-            </View>
-            {loading ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <ShimmerGridCard />
-              </ScrollView>
-            ) : (
-              <VideoCard customImages={videoSongs} />
-            )}
-          </React.Fragment>
-
-          <React.Fragment>
-            <View marginV-10>
-              <SectionTitle
-                title="Top Artists"
-                onPress={() =>
-                  navigate(SCREENS.VIEW, {
-                    title: 'Top Artists',
-                    type: 'top_artists',
-                  })
-                }
-              />
-            </View>
-            {loading ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <ShimmerGridCard />
-              </ScrollView>
-            ) : (
-              <ArtistList customImages={topArtists} />
-            )}
-          </React.Fragment>
-
-          <React.Fragment>
-            <View marginV-10>
-              <SectionTitle
-                title="Trending Songs"
-                onPress={() =>
-                  navigate(SCREENS.VIEW, {
-                    title: 'Trending Songs',
-                    type: 'trending_song',
-                  })
-                }
-              />
-            </View>
-
-            {loading ? (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <ShimmerGridCard />
-              </ScrollView>
-            ) : (
-              <ImageCardList customImages={trendingSongs} />
-            )}
-          </React.Fragment>
-
-          {/* {loading ? (
+          {loading ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <ShimmerGridCard />
             </ScrollView>
           ) : (
-            <React.Fragment>
-              <View marginV-10>
-                <SectionTitle
-                  title="Pick Your Mood"
-                  onPress={() =>
-                    navigate(SCREENS.VIEW, {
-                      title: 'Pick Your Mood',
-                      type: 'pick_your_mode',
-                    })
-                  }
-                />
-              </View>
-              <ImageCardList customImages={pickYourMode} />
-            </React.Fragment>
-          )} */}
-        </ScrollView>
-      </View>
+            <ImageCardList
+              customImages={activeData}
+              handleAddQueue={handleAddToQueue}
+            />
+          )}
+        </React.Fragment>
+
+        <React.Fragment>
+          <View marginV-10>
+            <SectionTitle
+              title="Video Songs"
+              onPress={() =>
+                navigate(SCREENS.VIEW, {
+                  title: 'Video Songs',
+                  type: 'video_song',
+                })
+              }
+            />
+          </View>
+          {loading ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <ShimmerGridCard />
+            </ScrollView>
+          ) : (
+            <VideoCard customImages={videoSongs} />
+          )}
+        </React.Fragment>
+
+        <React.Fragment>
+          <View marginV-10>
+            <SectionTitle
+              title="Top Artists"
+              onPress={() =>
+                navigate(SCREENS.VIEW, {
+                  title: 'Top Artists',
+                  type: 'top_artists',
+                })
+              }
+            />
+          </View>
+          {loading ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <ShimmerGridCard />
+            </ScrollView>
+          ) : (
+            <ArtistList artistData={topArtists} />
+          )}
+        </React.Fragment>
+
+        <React.Fragment>
+          <View marginV-10>
+            <SectionTitle
+              title="Trending Songs"
+              onPress={() =>
+                navigate(SCREENS.VIEW, {
+                  title: 'Trending Songs',
+                  type: 'trending_song',
+                })
+              }
+            />
+          </View>
+
+          {loading ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <ShimmerGridCard />
+            </ScrollView>
+          ) : (
+            <ImageCardList customImages={trendingSongs} />
+          )}
+        </React.Fragment>
+      </ScrollView>
       <AddToPlayListModal is_playlist={is_playlist} />
     </SafeAreaContainer>
   );
@@ -267,7 +251,7 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 10,
   },
   footer: {

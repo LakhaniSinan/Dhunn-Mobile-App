@@ -105,7 +105,7 @@ const VideoCard: React.FC<TrackSlidesProps> = ({
         <FlatList
           data={customImages}
           renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.id}
           numColumns={2} // Dynamic number of columns
           // columnWrapperStyle={styles.columnWrapper} // Add padding between rows
           // contentContainerStyle={{flex:1}}
@@ -120,7 +120,7 @@ const VideoCard: React.FC<TrackSlidesProps> = ({
           {customImages.map((item, index) => (
             <TouchableOpacity
               onPress={() => handlePlay(item)}
-              key={index}
+              key={item.id}
               style={[
                 cardStyle,
                 {

@@ -56,7 +56,7 @@ export const handleDownloadSong = async (media: MediaItem) => {
     if (result.statusCode === 200 || result.statusCode === 201) {
       store.dispatch(setDownloadProgress(null));
 
-      Alert.alert('Download Complete', `Saved in Dhunn folder.`);
+      Alert.alert('Download Complete', `Your track downloaded successfully.`);
       return downloadDest; // important!
     } else {
       Alert.alert('Failed to download the file.');

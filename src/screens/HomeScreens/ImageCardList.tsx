@@ -60,12 +60,10 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
     <TouchableOpacity
       onPress={() => handlePlay(item)}
       style={[styles.artistItemContainer, cardStyle]}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg}
-          style={styles.image}
-        />
-      </View>
+      <Image
+        source={item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg}
+        style={styles.image}
+      />
       <Typography textType="bold" numberOfLines={2} style={styles.artistName}>
         {item?.title}
       </Typography>
@@ -78,7 +76,7 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
         <FlatList
           data={customImages}
           renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
+          // keyExtractor={item => item.id.toString()}
           numColumns={2} // Dynamic number of columns
           // columnWrapperStyle={styles.columnWrapper} // Add padding between rows
           // contentContainerStyle={styles.flatListContent}
@@ -86,20 +84,21 @@ const ImageCardList: React.FC<TrackSlidesProps> = ({
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{marginTop: 10, gap: 10}}>
           {customImages.map(item => (
             <TouchableOpacity
               onPress={() => handlePlay(item)}
               style={[styles.artistItemContainer, cardStyle]}
               key={item.id}>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={
-                    item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg
-                  }
-                  style={styles.image}
-                />
-              </View>
+              <Image
+                source={
+                  item?.cover_image ? {uri: item.cover_image} : IMAGES.userImg
+                }
+                style={styles.image}
+              />
               <Typography
                 textType="bold"
                 numberOfLines={2}
@@ -129,28 +128,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   artistItemContainer: {
-    margin: 10,
+    marginVertical: 10,
     gap: 5,
     flex: 1,
+    alignItems: 'center',
+    width: screenWidth(35),
+    borderRadius: 10,
   },
   imageContainer: {
-    width: screenWidth(40),
-    height: screenHeight(15),
-    borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#231F25',
-    borderWidth: 1,
-    borderColor: '#2B2B2B',
+    // backgroundColor: '#231F25',
+    // borderWidth: 1,
+    // borderColor: '#2B2B2B',
   },
   artistName: {
     textAlign: 'center',
     marginTop: 5,
-    width: screenWidth(40),
+    fontSize: 13,
+    flex: 1,
   },
   image: {
     width: '100%',
-    height: '100%',
-    resizeMode: 'stretch',
+    height: screenHeight(15),
+    resizeMode: 'contain',
   },
 });
 

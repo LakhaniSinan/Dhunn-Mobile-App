@@ -34,6 +34,7 @@ import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import TrackPlayer from 'react-native-track-player';
 import SongGrid from '../../components/atoms/SongGrid';
 import {handleAudioSong} from '../../utils/function';
+import {useNavigation} from '@react-navigation/native';
 
 const ArtistDetails = ({route}: any) => {
   const navigation = useNavigation();

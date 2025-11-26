@@ -22,6 +22,7 @@ type TrackShortcutsMenuProps = PropsWithChildren<{track: MediaItem}>;
 
 export const TrackShortcutsMenu = ({
   showAddQueue = true,
+  type = 'default',
   track,
   children,
 }: TrackShortcutsMenuProps) => {
@@ -29,11 +30,14 @@ export const TrackShortcutsMenu = ({
   const activeTrack = useActiveTrack();
   const dispatch = useDispatch<AppDispatch>();
   const {queue} = useSelector((state: RootState) => state.mediaPlayer);
+  const {playlistDetails, loading} = useSelector(
+    (state: RootState) => state.playList,
+  );
   const [myQueue, setMyQueue] = useState<Track[]>([]);
-  const isFavorite = track.is_favorite;
-  const isPlaylist = track.is_playlist;
-
+  const isFavorite = track?.is_favorite;
+  const isPlaylist = track?.is_playlist;
   const [isInQueueTrack, setIsInQueueTrack] = useState(false);
+
   useEffect(() => {
     const getQueue = async () => {
       const trackPlayerqueue = await TrackPlayer.getQueue();
@@ -49,8 +53,8 @@ export const TrackShortcutsMenu = ({
   const onShare = async () => {
     try {
       const result = await Share.share({
-        message: `Check this out: ${track.file_path}`,
-        url: track.file_path, // Optional, some platforms might not use this directly
+        message: `Check this out: ${track.file_path || track.url}`,
+        url: track.file_path || track.url, // Optional, some platforms might not use this directly
         title: track.title, // Optional title for iOS
       });
 
@@ -149,19 +153,25 @@ export const TrackShortcutsMenu = ({
           // }),
           imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
         },
-        {
-          id: isFavorite ? 'remove-from-favorites' : 'add-to-favorites',
-          title: isFavorite ? 'Remove from favorites' : 'Add to favorites',
-          image: Platform.select({
-            ios: isFavorite ? 'heart.fill' : 'heart',
-            android: isFavorite ? 'heart.fill' : 'heart',
-          }),
-          imageColor: isFavorite
-            ? COLORS.PRIMARY
-            : Platform.OS == 'android'
-            ? COLORS.BLACK
-            : '',
-        },
+        ...(type !== 'queue'
+          ? [
+              {
+                id: isFavorite ? 'remove-from-favorites' : 'add-to-favorites',
+                title: isFavorite
+                  ? 'Remove from favorites'
+                  : 'Add to favorites',
+                image: Platform.select({
+                  ios: isFavorite ? 'heart.fill' : 'heart',
+                  android: isFavorite ? 'heart.fill' : 'heart',
+                }),
+                imageColor: isFavorite
+                  ? COLORS.PRIMARY
+                  : Platform.OS == 'android'
+                  ? COLORS.BLACK
+                  : '',
+              },
+            ]
+          : []),
         ...(myQueue?.length > 1
           ? [
               {
@@ -180,24 +190,28 @@ export const TrackShortcutsMenu = ({
           // }),
           imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
         },
-        {
-          id: 'add-to-playlist',
-          title: isPlaylist ? 'Remove from playlist' : 'Add to playlist',
-          // image: Platform.select({
-          //   ios: 'download',
-          //   android: 'ic_menu_download',
-          // }),
-          imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
-        },
-        {
-          id: 'add-to-ringtone',
-          title: 'Add to ringtone',
-          // image: Platform.select({
-          //   ios: 'download',
-          //   android: 'ic_menu_download',
-          // }),
-          imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
-        },
+        ...(type !== 'queue'
+          ? [
+              {
+                id: 'add-to-playlist',
+                title: isPlaylist ? 'Remove from playlist' : 'Add to playlist',
+                // image: Platform.select({
+                //   ios: 'download',
+                //   android: 'ic_menu_download',
+                // }),
+                imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
+              },
+            ]
+          : []),
+        // {
+        //   id: 'add-to-ringtone',
+        //   title: 'Add to ringtone',
+        //   // image: Platform.select({
+        //   //   ios: 'download',
+        //   //   android: 'ic_menu_download',
+        //   // }),
+        //   imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
+        // },
       ]}>
       {children}
     </MenuView>

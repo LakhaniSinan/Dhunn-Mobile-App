@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
-import { View } from "react-native-ui-lib";
-import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Header, Typography } from "../../components/atoms";
-import { COLORS, IMAGES } from "../../constants";
-import { useNavigation } from "@react-navigation/native";
-import ArtistList from "../HomeScreens/ArtistList";
-import SectionTitle from "../HomeScreens/SectionTitle";
-import { FooterItem } from "../../components/atoms/FooterItem";
-import { toggleDrawer } from "../../navigation/RootNavigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import { fetchArtists } from "../../redux/slice/Artist/artistSlice";
+import React, {useEffect, useState} from 'react';
+import {Image, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {View} from 'react-native-ui-lib';
+import SafeAreaContainer from '../../containers/SafeAreaContainer';
+import {Header, Typography} from '../../components/atoms';
+import {COLORS, IMAGES} from '../../constants';
+import {useNavigation} from '@react-navigation/native';
+import ArtistList from '../HomeScreens/ArtistList';
+import SectionTitle from '../HomeScreens/SectionTitle';
+import {FooterItem} from '../../components/atoms/FooterItem';
+import {toggleDrawer} from '../../navigation/RootNavigation';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
+import {fetchArtists} from '../../redux/slice/Artist/artistSlice';
 
 const Language = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { groupedArtists, topArtists, loading } = useSelector(
-    (state: RootState) => state.artist
+  const {groupedArtists, topArtists, loading} = useSelector(
+    (state: RootState) => state.artist,
   );
 
   useEffect(() => {
@@ -29,24 +29,24 @@ const Language = () => {
         <Header onPressLeft={() => toggleDrawer()} />
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        <Typography align="center" size={20} style={{ marginVertical: 20 }}>
+        <Typography align="center" size={20} style={{marginVertical: 20}}>
           Top Artists
         </Typography>
-        <ArtistList customImages={topArtists} columns={true} />
-        <Typography align="center" size={20} style={{ marginVertical: 20 }}>
+        <ArtistList artistData={topArtists} columns={true} />
+        <Typography align="center" size={20} style={{marginVertical: 20}}>
           All Artists
         </Typography>
         {groupedArtists &&
           Object.entries(groupedArtists).map(
             ([language, artists]) =>
-              language !== "top_artists" && (
+              language !== 'top_artists' && (
                 <View key={language}>
-                  <Typography size={20} style={{ marginVertical: 20 }}>
+                  <Typography size={20} style={{marginVertical: 20}}>
                     {language}
                   </Typography>
-                  <ArtistList customImages={artists} columns={true} />
+                  <ArtistList artistData={artists} columns={true} />
                 </View>
-              )
+              ),
           )}
       </ScrollView>
       <FooterItem />

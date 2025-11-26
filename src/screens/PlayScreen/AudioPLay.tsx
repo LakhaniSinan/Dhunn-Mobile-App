@@ -11,7 +11,11 @@ import {View} from 'react-native-ui-lib';
 import SafeAreaContainer from '../../containers/SafeAreaContainer';
 import {Header, Typography} from '../../components/atoms';
 import {COLORS, IMAGES} from '../../constants';
-import TrackPlayer, {Track, useActiveTrack} from 'react-native-track-player';
+import TrackPlayer, {
+  Track,
+  useActiveTrack,
+  useIsPlaying,
+} from 'react-native-track-player';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {MovingText} from '../../components/atoms/MovingText';
 import Icon from '../../components/atoms/Icon';
@@ -31,11 +35,17 @@ import {
 import {MediaItem} from '../../redux/slice/Tops/TopsSlice';
 import {TrackShortcutsMenu} from '../../components/atoms/TrackShortcutsMenu';
 import {getMediaById} from '../../redux/slice/Home/homeSlice';
+import {fetchFavoriteSongs} from '../../redux/slice/Favourite/favouriteSlice';
+import {handleDownloadSong} from '../../utils/function';
 
 const AudioPLay = () => {
   const dispatch = useDispatch<AppDispatch>();
   const activeTrack = useActiveTrack();
   const [isLoading, setIsLoading] = useState(false);
+  const {favoriteSongs} = useSelector((state: RootState) => state.favourite);
+  const [selectedQueueTrack, setSelectedQueueTrack] =
+    useState<MediaItem | null>(null);
+  const {playing} = useIsPlaying();
 
   const {top, bottom} = useSafeAreaInsets();
   const {
@@ -62,6 +72,7 @@ const AudioPLay = () => {
   }, [queue, activeTrack]);
   useEffect(() => {
     handleGetMediaById();
+    dispatch(fetchFavoriteSongs());
   }, [currentTrack, playlistDetails]);
 
   const handleGetMediaById = () => {
@@ -260,48 +271,151 @@ const AudioPLay = () => {
             <PlayerVolumeBar style={{marginTop: 'auto', marginBottom: 30}} />
           </View>
           <View gap-10>
-            {uniqueTracks?.map(i => (
-              <View
-                key={i.title}
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  gap: 10,
-                  justifyContent: 'space-between',
-                  backgroundColor: '#231F25',
-                  borderRadius: 10,
-                  marginBottom: 10,
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: '#2B2B2B',
-                  alignItems: 'center',
-                }}>
+            {uniqueTracks?.map(i => {
+              let findRess = favoriteSongs?.find(
+                fav => fav?.id?.toString() === i.id,
+              );
+
+              return (
                 <View
+                  key={i.title}
                   style={{
-                    flexDirection: 'row',
+                    flex: 1,
+                    // flexDirection: 'row',
                     gap: 10,
+                    backgroundColor:
+                      selectedQueueTrack?.id === i.id ? '#00000066' : '#231F25',
+                    borderRadius: 10,
+                    marginBottom: 10,
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: '#2B2B2B',
                     alignItems: 'center',
                   }}>
-                  <Image
-                    source={{uri: i.artwork}}
+                  <View
                     style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 10,
-                      resizeMode: 'cover',
-                    }}
-                  />
-                  <Typography textType="bold">{i.title}</Typography>
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 10,
+                    }}>
+                    <Image
+                      source={IMAGES.play}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        marginRight: 5,
+                        resizeMode: 'contain',
+                      }}
+                    />
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        gap: 10,
+                        alignItems: 'center',
+                        flex: 1,
+                      }}>
+                      <Image
+                        source={{uri: i.artwork}}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 10,
+                          resizeMode: 'cover',
+                        }}
+                      />
+                      <Typography textType="bold">{i.title}</Typography>
+                    </View>
+                    {!isLoading && (
+                      <>
+                        {!mediaDetail ? (
+                          <Icon
+                            vector="Entypo"
+                            name="circle-with-minus"
+                            color={COLORS.PRIMARY}
+                            size={25}
+                            onPress={() => handleRemoveTrack(i.id)}
+                          />
+                        ) : (
+                          <Icon
+                            vector="MaterialIcons"
+                            name={
+                              selectedQueueTrack?.id === i.id
+                                ? 'keyboard-arrow-up'
+                                : 'keyboard-arrow-down'
+                            }
+                            color={COLORS.WHITE}
+                            size={25}
+                            onPress={() => {
+                              if (
+                                selectedQueueTrack &&
+                                selectedQueueTrack?.id === i.id
+                              ) {
+                                setSelectedQueueTrack(null);
+                              } else {
+                                setSelectedQueueTrack(i);
+                              }
+                            }}
+                            // onPress={() => handleRemoveTrack(i.id)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </View>
+                  {mediaDetail && selectedQueueTrack?.id === i.id && (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        borderTopWidth: 1,
+                        borderTopColor: COLORS.WHITE,
+                        gap: 30,
+                        marginTop: 10,
+                        paddingHorizontal: 50,
+                        paddingTop: 10,
+                      }}>
+                      <Icon
+                        vector="Feather"
+                        name="download"
+                        color={COLORS.WHITE}
+                        size={20}
+                        onPress={() => {
+                          let findSong = queue?.find(track => track.id == i.id);
+                          if (findSong) {
+                            handleDownloadSong({
+                              ...findSong,
+                              file_path: findSong?.url,
+                            });
+                          }
+                        }}
+                      />
+
+                      <Icon
+                        vector="FontAwesome"
+                        name={findRess ? 'heart' : 'heart-o'}
+                        color={COLORS.WHITE}
+                        size={20}
+                        onPress={() => {
+                          if (findRess) {
+                            handleLikeToggle(findRess ? findRess : i);
+                          }
+                        }}
+                      />
+                      <TrackShortcutsMenu
+                        track={queue?.find(track => track.id == i.id)}
+                        showAddQueue={false}
+                        type={'queue'}>
+                        <Image
+                          source={IMAGES.dotsVertical}
+                          style={{...styles.icon, width: 25, height: 25}}
+                        />
+                      </TrackShortcutsMenu>
+                    </View>
+                  )}
                 </View>
-                <Icon
-                  vector="Entypo"
-                  name="circle-with-minus"
-                  color={COLORS.PRIMARY}
-                  size={25}
-                  onPress={() => handleRemoveTrack(i.id)}
-                />
-              </View>
-            ))}
+              );
+            })}
           </View>
         </ScrollView>
       </View>
@@ -329,6 +443,7 @@ const DismissPlayerSymbol = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   overlayContainer: {
     flex: 1,

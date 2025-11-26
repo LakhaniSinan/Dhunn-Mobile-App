@@ -121,6 +121,7 @@ export const FooterItem = (props: any) => {
     return null;
   return (
     <TouchableOpacity
+      activeOpacity={0.9}
       onPress={() =>
         //  navigate(SCREENS.AUDIO_PLAY)
         navigate(SCREENS.STACK, {
@@ -168,8 +169,8 @@ export const FooterItem = (props: any) => {
               />
             </TouchableOpacity>
           )}
-          <PlayPauseButton iconSize={24} />
-          <SkipToNextButton iconSize={22} />
+          <PlayPauseButton iconSize={20} containerSize={40} />
+          <SkipToNextButton iconSize={40} />
           <Icon
             vector="Entypo"
             name="cross"
