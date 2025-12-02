@@ -24,7 +24,7 @@ const SearchScreen = () => {
   );
   const handleSubmit = (e: any) => {
     dispatch(setQuery(searchQuery));
-    dispatch(fetchSearchResults({query: searchQuery, page: 1}));
+    dispatch(fetchSearchResults({query: '', page: 1}));
     // setSearchQuery('');
   };
 

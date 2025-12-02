@@ -148,7 +148,7 @@ const ArtistDetails = ({route}: any) => {
               />
             </View>
           )}
-          {activeData?.length !== 0 ? (
+          {activeData?.length > 0 ? (
             <ImageCardList customImages={activeData} />
           ) : (
             <View center flex style={{marginTop: 20}}>
