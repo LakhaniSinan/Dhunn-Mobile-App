@@ -1,41 +1,23 @@
-import React, {useState} from 'react';
-import {
-  Image,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
-import {TouchableOpacity, View} from 'react-native-ui-lib';
-import SafeAreaContainer from '../../containers/SafeAreaContainer';
-import {Header, SerachComponent, Typography} from '../../components/atoms';
-import Slider from '../HomeScreens/Slider';
-import SectionTitle from '../HomeScreens/SectionTitle';
-import ImageCardList from '../HomeScreens/ImageCardList';
-import ArtistList from '../HomeScreens/ArtistList';
-import SongCard from '../HomeScreens/SongList';
-import {COLORS, IMAGES, SCREENS} from '../../constants';
-import {AudioScreen} from '../../components/molucule/AudioScreen';
 import {useNavigation} from '@react-navigation/native';
-import {VideoScreen} from '../../components/molucule/VideoScreen';
-import {MovieScreen} from '../../components/molucule/MovieScreen';
-import TabList from '../HomeScreens/TabList';
-import {FooterItem} from '../../components/atoms/FooterItem';
-import {toggleDrawer} from '../../navigation/RootNavigation';
+import React, {useState} from 'react';
+import {KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
+import {View} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../redux/store';
+import {Header, SerachComponent} from '../../components/atoms';
+import ShimmerGridCard from '../../components/atoms/ShimmerGridCard';
+import {COLORS} from '../../constants';
+import SafeAreaContainer from '../../containers/SafeAreaContainer';
+import {toggleDrawer} from '../../navigation/RootNavigation';
 import {
   fetchSearchResults,
   setQuery,
 } from '../../redux/slice/Search/searchSlice';
-import ShimmerGridCard from '../../components/atoms/ShimmerGridCard';
+import {AppDispatch, RootState} from '../../redux/store';
+import ImageCardList from '../HomeScreens/ImageCardList';
 
 const SearchScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [activeTab, setActiveTab] = useState(0);
   const navigation = useNavigation();
-  const [play, setPlay] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const {results, query, pagination, loading} = useSelector(
     (state: RootState) => state.searchSong,
@@ -43,7 +25,7 @@ const SearchScreen = () => {
   const handleSubmit = (e: any) => {
     dispatch(setQuery(searchQuery));
     dispatch(fetchSearchResults({query: searchQuery, page: 1}));
-    setSearchQuery('');
+    // setSearchQuery('');
   };
 
   return (

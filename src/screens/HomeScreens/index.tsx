@@ -17,7 +17,10 @@ import ImageCardList from './ImageCardList';
 import SectionTitle from './SectionTitle';
 import TabList from './TabList';
 import VideoCard from './VideoCard';
-import {addQueueList} from '../../redux/slice/Player/mediaPlayerSlice';
+import {
+  addQueueList,
+  clearQueue,
+} from '../../redux/slice/Player/mediaPlayerSlice';
 import TrackPlayer from 'react-native-track-player';
 
 const Home = () => {
@@ -80,10 +83,19 @@ const Home = () => {
 
   const handleAddToQueue = async (track: MediaItem) => {
     try {
-      let filteredAudio = audio?.filter(item => item.id != track.id);
-      const audioTracks = filteredAudio
+      const clickedTrack = {
+        id: track.id.toString(),
+        url: track.file_path,
+        title: track.title,
+        artist: track.artist?.name || 'Unknown Artist',
+        artwork: track.cover_image,
+        duration: parseDuration(track.duration),
+      };
+
+      let filteredAudio = audio
+        ?.filter(item => item.id !== track.id)
         ?.filter(item => item.type === 'audio')
-        .map(item => ({
+        ?.map(item => ({
           id: item.id.toString(),
           url: item.file_path,
           title: item.title,
@@ -92,22 +104,18 @@ const Home = () => {
           duration: parseDuration(item.duration),
         }));
 
-      if (!audioTracks || audioTracks.length === 0) return;
+      const uniqueRest = [
+        ...new Map(filteredAudio.map(item => [item.id, item])).values(),
+      ];
 
-      // Add to Redux queue
-      dispatch(addQueueList(audioTracks));
+      const finalPlaylist = [clickedTrack, ...uniqueRest];
+      await TrackPlayer.reset();
+      await TrackPlayer.add(finalPlaylist);
 
-      // ADD ALL TRACKS AT ONCE (this preserves order)
-      await TrackPlayer.add(audioTracks);
-
-      // Start playing only if nothing is currently playing
-      const currentTrack = await TrackPlayer.getActiveTrack();
-      if (!currentTrack) {
-        await TrackPlayer.skip(Number(audioTracks[0]?.id));
-        await TrackPlayer.play();
-      }
-
-      console.log('Playlist added to queue:', audioTracks.length);
+      dispatch(clearQueue());
+      dispatch(addQueueList(finalPlaylist));
+      await TrackPlayer.skip(0);
+      await TrackPlayer.play();
     } catch (err) {
       console.log('Queue error:', err);
     }
@@ -174,7 +182,7 @@ const Home = () => {
             </ScrollView>
           ) : (
             <ImageCardList
-              customImages={activeData}
+              customImages={newRelease}
               handleAddQueue={handleAddToQueue}
             />
           )}

@@ -61,7 +61,6 @@ const AudioPLay = () => {
   const {playlistDetails} = useSelector((state: RootState) => state.playList);
   const [mediaDetail, setMediaDetail] = useState<RootState | null>(null);
 
-  const [expanded, setExpanded] = useState(false);
   const [myQueue, setMyQueue] = useState<Track[]>([]);
   useEffect(() => {
     const getQueue = async () => {
@@ -122,6 +121,30 @@ const AudioPLay = () => {
       console.error('Error removing track:', error);
     }
   };
+
+  const playSelectedTrack = async (track: any) => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+
+      const index = queue.findIndex(
+        t => t.id.toString() === track.id.toString(),
+      );
+
+      if (index === -1) {
+        console.log('Track not found in queue');
+        return;
+      }
+
+      // Skip to selected track
+      await TrackPlayer.skip(index);
+      await TrackPlayer.play();
+      setSelectedQueueTrack(track); // update UI highlight
+    } catch (error) {
+      console.log('playSelectedTrack error:', error);
+    }
+  };
+
+  console.log(myQueue, 'myQueuemyQueuemyQueuemyQueue');
 
   const uniqueTracks = myQueue
     .filter(
@@ -298,15 +321,17 @@ const AudioPLay = () => {
                       alignItems: 'center',
                       gap: 10,
                     }}>
-                    <Image
-                      source={IMAGES.play}
-                      style={{
-                        width: 18,
-                        height: 18,
-                        marginRight: 5,
-                        resizeMode: 'contain',
-                      }}
-                    />
+                    <TouchableOpacity onPress={() => playSelectedTrack(i)}>
+                      <Image
+                        source={IMAGES.play}
+                        style={{
+                          width: 18,
+                          height: 18,
+                          marginRight: 5,
+                          resizeMode: 'contain',
+                        }}
+                      />
+                    </TouchableOpacity>
                     <View
                       style={{
                         flexDirection: 'row',

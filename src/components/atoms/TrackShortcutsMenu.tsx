@@ -203,15 +203,15 @@ export const TrackShortcutsMenu = ({
               },
             ]
           : []),
-        // {
-        //   id: 'add-to-ringtone',
-        //   title: 'Add to ringtone',
-        //   // image: Platform.select({
-        //   //   ios: 'download',
-        //   //   android: 'ic_menu_download',
-        //   // }),
-        //   imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
-        // },
+        {
+          id: 'add-to-ringtone',
+          title: 'Add to ringtone',
+          // image: Platform.select({
+          //   ios: 'download',
+          //   android: 'ic_menu_download',
+          // }),
+          imageColor: Platform.OS == 'android' ? COLORS.BLACK : '',
+        },
       ]}>
       {children}
     </MenuView>

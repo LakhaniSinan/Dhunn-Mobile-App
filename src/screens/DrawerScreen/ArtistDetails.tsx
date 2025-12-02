@@ -35,6 +35,7 @@ import TrackPlayer from 'react-native-track-player';
 import SongGrid from '../../components/atoms/SongGrid';
 import {handleAudioSong} from '../../utils/function';
 import {useNavigation} from '@react-navigation/native';
+import ImageCardList from '../HomeScreens/ImageCardList';
 
 const ArtistDetails = ({route}: any) => {
   const navigation = useNavigation();
@@ -148,13 +149,7 @@ const ArtistDetails = ({route}: any) => {
             </View>
           )}
           {activeData?.length !== 0 ? (
-            <SongGrid
-              data={activeData}
-              onPlay={handlePlay}
-              onLike={handleLikeToggle}
-              onMore={handleMore}
-              onDownload={handleDownload}
-            />
+            <ImageCardList customImages={activeData} />
           ) : (
             <View center flex style={{marginTop: 20}}>
               <Typography>No Record Found</Typography>

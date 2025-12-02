@@ -47,7 +47,10 @@ const AppNavigator = () => {
         <Drawer.Screen name={SCREENS.HOME} component={Home} />
         <Drawer.Screen name={SCREENS.LANGUAGE} component={Language} />
         <Drawer.Screen name={SCREENS.ARTIST} component={Artist} />
-        <Drawer.Screen name={SCREENS.SEARCH} component={SearchScreen} />
+        <Drawer.Screen
+          name={SCREENS.ARTIST_DETAILS}
+          component={ArtistDetails}
+        />
       </Drawer.Navigator>
     </>
   );
@@ -104,6 +107,7 @@ const StackCompoonent = () => {
           component={PlaylistDetails}
         />
         <Stack.Screen name={SCREENS.PROFILE_SCREEN} component={ProfileScreen} />
+        <Stack.Screen name={SCREENS.SEARCH} component={SearchScreen} />
         <Stack.Screen
           options={{
             presentation: 'card',
