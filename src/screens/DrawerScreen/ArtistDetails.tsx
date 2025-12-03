@@ -149,7 +149,7 @@ const ArtistDetails = ({route}: any) => {
             </View>
           )}
           {activeData?.length > 0 ? (
-            <ImageCardList customImages={activeData} />
+            <ImageCardList customImages={activeData} columns />
           ) : (
             <View center flex style={{marginTop: 20}}>
               <Typography>No Record Found</Typography>
