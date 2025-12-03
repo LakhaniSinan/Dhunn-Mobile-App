@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Platform, StyleSheet} from 'react-native';
 import {View} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,6 +10,7 @@ import SafeAreaContainer from '../../containers/SafeAreaContainer';
 import {toggleDrawer} from '../../navigation/RootNavigation';
 import {
   fetchSearchResults,
+  resetSearch,
   setQuery,
 } from '../../redux/slice/Search/searchSlice';
 import {AppDispatch, RootState} from '../../redux/store';
@@ -21,11 +22,19 @@ const SearchScreen = () => {
   const {results, query, pagination, loading} = useSelector(
     (state: RootState) => state.searchSong,
   );
-  const [searchQuery, setSearchQuery] = useState(query || '');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    return () => {
+      dispatch(setQuery(''));
+      dispatch(resetSearch());
+    };
+  }, []);
+
   const handleSubmit = (e: any) => {
     dispatch(setQuery(searchQuery));
     dispatch(fetchSearchResults({query: searchQuery || '', page: 1}));
-    // setSearchQuery('');
+    setSearchQuery('');
   };
 
   return (
