@@ -18,13 +18,13 @@ import ImageCardList from '../HomeScreens/ImageCardList';
 const SearchScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
   const {results, query, pagination, loading} = useSelector(
     (state: RootState) => state.searchSong,
   );
+  const [searchQuery, setSearchQuery] = useState(query || '');
   const handleSubmit = (e: any) => {
     dispatch(setQuery(searchQuery));
-    dispatch(fetchSearchResults({query: '', page: 1}));
+    dispatch(fetchSearchResults({query: searchQuery || '', page: 1}));
     // setSearchQuery('');
   };
 

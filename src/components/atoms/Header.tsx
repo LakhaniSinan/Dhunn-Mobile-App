@@ -121,7 +121,12 @@ export const Header = (props: any) => {
           )}
           {rightIcon2 && (
             <TouchableOpacity
-              onPress={() => navigate(SCREENS.SEARCH)}
+              onPress={() =>
+                navigate({
+                  name: SCREENS.STACK,
+                  params: {screen: SCREENS.SEARCH},
+                })
+              }
               style={{flex: 1, alignItems: 'flex-end'}}>
               <Image
                 source={IMAGES.search}
